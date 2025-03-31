@@ -31,7 +31,7 @@ const Card cards[] = {
 	{
 		.header = {
 			0, 
-			POKEMON, 
+			CardType::POKEMON, 
 			0, 
 			SetId::BASE_SET, 
 			Rarity::HOLO
@@ -42,23 +42,11 @@ const Card cards[] = {
 			ElementType::PSYCHIC, ElementType::NONE,
 			80,
 			ElementType::PSYCHIC,
-			ELEMENTTYPE::NONE,
+			ElementType::NONE,
 			3,
 			0,
 			0,
 			0
-		}
-	},
-	{
-		.header = {
-			1,
-			POKEMON,
-			0,
-			SetId::BASE_SET,
-			Rarity::HOLO
-		},
-		.pokemon = {
-			
 		}
 	}
 };
