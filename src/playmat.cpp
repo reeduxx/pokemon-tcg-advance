@@ -13,6 +13,8 @@ Playmat::Playmat() : m_bg(bn::regular_bg_items::playmat.create_bg()), m_scroll_c
 	m_zones.push_back({{0, -24}});
 	// Stadium
 	m_zones.push_back({{-23, -9}});
+	// Opponent active
+	m_zones.push_back({{0, 24}});
 	// Opponent bench
 	m_zones.push_back({{-54, -15}});
 	m_zones.push_back({{-27, -15}});

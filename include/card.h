@@ -14,7 +14,7 @@ enum class SetId : uint8_t {
 	BASE_SET,
 	JUNGLE,
 	FOSSIL,
-	BASE_SET_2,
+	BASE_SET_2, // Reprint set
 	TEAM_ROCKET,
 	GYM_HEROES,
 	GYM_CHALLENGE,
@@ -22,7 +22,7 @@ enum class SetId : uint8_t {
 	NEO_DISCOVERY,
 	NEO_REVELATION,
 	NEO_DESTINY,
-	LEGENDARY_COLLECTION,
+	LEGENDARY_COLLECTION, // Reprint set
 	EXPEDITION_BASE_SET,
 	AQUAPOLIS,
 	SKYRIDGE,
@@ -79,6 +79,7 @@ struct CardHeader {
 	CardType type;
 	uint8_t name_id;
 	SetId set_id;
+	uint8_t set_number;
 	Rarity rarity;
 };
 
