@@ -4,73 +4,74 @@
 #include <cstdint>
 
 enum class CardType : uint8_t {
-	POKEMON,
-	TRAINER,
-	ENERGY,
+	CARD_POKEMON,
+	CARD_TRAINER,
+	CARD_ENERGY,
 	NONE = 0xFF
 };
 
-enum class SetId : uint8_t {
-	BASE_SET,
-	JUNGLE,
-	FOSSIL,
-	BASE_SET_2, // Reprint set
-	TEAM_ROCKET,
-	GYM_HEROES,
-	GYM_CHALLENGE,
-	NEO_GENESIS,
-	NEO_DISCOVERY,
-	NEO_REVELATION,
-	NEO_DESTINY,
-	LEGENDARY_COLLECTION, // Reprint set
-	EXPEDITION_BASE_SET,
-	AQUAPOLIS,
-	SKYRIDGE,
-	EX_RUBY_SAPPHIRE,
-	EX_SANDSTORM,
-	EX_DRAGON,
-	EX_TEAM_MAGMA_VS_TEAM_AQUA,
-	EX_HIDDEN_LEGENDS,
-	EX_FIRERED_LEAFGREEN,
-	EX_TEAM_ROCKET_RETURNS,
-	EX_DEOXYS,
-	EX_EMERALD,
-	EX_UNSEEN_FORCES,
-	EX_DELTA_SPECIES,
-	EX_LEGEND_MAKER,
-	EX_HOLON_PHANTOMS,
-	EX_CRYSTAL_GUARDIANS,
-	EX_DRAGON_FRONTIERS,
-	EX_POWER_KEEPERS,
+enum class Set : uint8_t {
+	SET_BASE_SET,
+	SET_JUNGLE,
+	SET_FOSSIL,
+	SET_BASE_SET_2, // Reprint set
+	SET_TEAM_ROCKET,
+	SET_GYM_HEROES,
+	SET_GYM_CHALLENGE,
+	SET_NEO_GENESIS,
+	SET_NEO_DISCOVERY,
+	SET_NEO_REVELATION,
+	SET_NEO_DESTINY,
+	SET_LEGENDARY_COLLECTION, // Reprint set
+	SET_EXPEDITION_BASE_SET,
+	SET_AQUAPOLIS,
+	SET_SKYRIDGE,
+	SET_EX_RUBY_SAPPHIRE,
+	SET_EX_SANDSTORM,
+	SET_EX_DRAGON,
+	SET_EX_TEAM_MAGMA_VS_TEAM_AQUA,
+	SET_EX_HIDDEN_LEGENDS,
+	SET_EX_FIRERED_LEAFGREEN,
+	SET_EX_TEAM_ROCKET_RETURNS,
+	SET_EX_DEOXYS,
+	SET_EX_EMERALD,
+	SET_EX_UNSEEN_FORCES,
+	SET_EX_DELTA_SPECIES,
+	SET_EX_LEGEND_MAKER,
+	SET_EX_HOLON_PHANTOMS,
+	SET_EX_CRYSTAL_GUARDIANS,
+	SET_EX_DRAGON_FRONTIERS,
+	SET_EX_POWER_KEEPERS,
 	NONE = 0xFF
 };
 
 enum class Rarity : uint8_t {
-	COMMON,
-	UNCOMMON,
-	RARE,
-	HOLO,
-	SECRET,
+	RARITY_COMMON,
+	RARITY_UNCOMMON,
+	RARITY_RARE,
+	RARITY_HOLO,
+	RARITY_SECRET,
+	RARITY_PROMO,
 	NONE = 0xFF
 };
 
-enum class ElementType : uint8_t {
-	GRASS,
-	FIRE,
-	WATER,
-	LIGHTNING,
-	FIGHTING,
-	PSYCHIC,
-	COLORLESS,
-	DARKNESS,
-	METAL,
+enum class Type : uint8_t {
+	TYPE_GRASS,
+	TYPE_FIRE,
+	TYPE_WATER,
+	TYPE_LIGHTNING,
+	TYPE_FIGHTING,
+	TYPE_PSYCHIC,
+	TYPE_COLORLESS,
+	TYPE_DARKNESS,
+	TYPE_METAL,
 	NONE = 0xFF
 };
 
 enum class TrainerSubtype : uint8_t {
-	ITEM,
-	SUPPORTER,
-	STADIUM,
+	SUBTYPE_ITEM,
+	SUBTYPE_SUPPORTER,
+	SUBTYPE_STADIUM,
 	NONE = 0xFF
 };
 
@@ -78,7 +79,7 @@ struct CardHeader {
 	uint16_t id;
 	CardType type;
 	uint8_t name_id;
-	SetId set_id;
+	Set set;
 	uint8_t set_number;
 	Rarity rarity;
 };
@@ -86,11 +87,11 @@ struct CardHeader {
 struct PokemonData {
 	uint8_t stage;
 	uint8_t evolution_from;
-	ElementType primary_element;
-	ElementType secondary_element;
+	Type primary_type;
+	Type secondary_type;
 	uint8_t hp;
-	ElementType weakness;
-	ElementType resistance;
+	Type weakness;
+	Type resistance;
 	uint8_t retreat_cost;
 	uint8_t ability_id;
 	uint8_t attack1_id;
@@ -103,7 +104,7 @@ struct TrainerData {
 };
 
 struct EnergyData {
-	ElementType element;
+	Type element;
 	uint8_t special;
 };
 

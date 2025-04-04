@@ -2,7 +2,9 @@
 #define DECK_H
 
 #include "bn_vector.h"
+#include "battle_card.h"
 #include "card.h"
+#include "hand.h"
 
 constexpr int MAX_DECK_SIZE = 60;
 
@@ -12,9 +14,9 @@ struct CardInstance {
 	bool is_tapped = false;
 };
 
-using Deck = bn::vector<CardInstance, MAX_DECK_SIZE>;
+using Deck = bn::vector<BattleCard, MAX_DECK_SIZE>;
 
 void shuffle_deck(Deck& deck);
-void draw_card(Deck& deck, bn::vector<CardInstance, 10>& hand);
+void draw_card(Deck& deck, Hand& hand);
 
 #endif // DECK_H
