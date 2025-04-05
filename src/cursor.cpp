@@ -16,25 +16,33 @@ void Cursor::update() {
 
 void Cursor::set_pos(bn::fixed_point pos) {
 	m_pos = pos;
-	m_sprite.set_position(m_pos);
-}
-
-void Cursor::move_by(int dx, int dy) {
-	set_pos(m_pos + bn::fixed_point(dx, dy));
+	m_sprite.set_position(pos);
 }
 
 bn::fixed_point Cursor::position() const {
 	return m_sprite.position();
 }
 
-void Cursor::snap_to(bn::fixed_point zone) {
-	set_pos(zone);
+void Cursor::set_zone(ZoneId id) {
+	m_zone_id = id;
 }
 
-void Cursor::set_zone_idx(int i) {
-	m_zone_idx = i;
+ZoneId Cursor::zone() const {
+	return m_zone_id;
 }
 
-int Cursor::zone_idx() const {
-	return m_zone_idx;
+void Cursor::set_mode(CursorMode mode) {
+	m_mode = mode;
+}
+
+CursorMode Cursor::mode() const {
+	return m_mode;
+}
+
+void Cursor::set_hand_idx(int i) {
+	m_hand_idx = i;
+}
+
+int Cursor::hand_idx() const {
+	return m_hand_idx;
 }

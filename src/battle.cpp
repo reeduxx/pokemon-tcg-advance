@@ -4,6 +4,7 @@
 Battle::Battle() {
 	init_decks();
 	draw_starting_hands();
+	m_opponent_hand.set_visible(false);
 }
 
 void Battle::init_decks() {
@@ -26,13 +27,14 @@ void Battle::init_decks() {
 void Battle::draw_starting_hands() {
 	for(int i = 0; i < 7; i++) {
 		draw_card(m_player_deck, m_player_hand);
-		//draw_card(m_opponent_deck, m_opponent_hand);
+		draw_card(m_opponent_deck, m_opponent_hand);
 	}
 }
 
 void Battle::update() {
 	m_field.update();
 	m_player_hand.update();
+	m_opponent_hand.update();
 }
 
 Field& Battle::field() {
@@ -82,6 +84,8 @@ void Battle::next_phase() {
 			end_turn();
 			reset_phase();
 			break;
+		default:
+			return;
 	}
 }
 
@@ -99,4 +103,12 @@ void Battle::try_draw_card_opponent() {
 	if(!m_opponent_deck.empty() && m_opponent_hand.card_count() < 10) {
 		draw_card(m_opponent_deck, m_opponent_hand);
 	}
+}
+
+Hand Battle::player_hand() const {
+	return m_player_hand;
+}
+
+Hand Battle::opponent_hand() const {
+	return m_opponent_hand;
 }

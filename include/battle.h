@@ -21,8 +21,8 @@ class Battle {
 	private:
 		Deck m_player_deck;
 		Deck m_opponent_deck;
-		Hand m_player_hand;
-		Hand m_opponent_hand;
+		Hand m_player_hand{false};
+		Hand m_opponent_hand{true};
 		Field m_field;
 		TurnPlayer m_turn_player = TurnPlayer::PLAYER;
 		Phase m_phase = Phase::DRAW;
@@ -41,6 +41,8 @@ class Battle {
 		bool is_phase(Phase phase) const;
 		void try_draw_card_player();
 		void try_draw_card_opponent();
+		Hand player_hand() const;
+		Hand opponent_hand() const;
 	private:
 		void init_decks();
 		void draw_starting_hands();

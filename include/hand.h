@@ -12,8 +12,9 @@ class Hand {
 		bn::vector<BattleCard, MAX_HAND_SIZE> m_cards;
 		bn::vector<bn::sprite_ptr, MAX_HAND_SIZE> m_sprites;
 		bn::vector<bn::fixed_point, MAX_HAND_SIZE> m_pos;
+		bool m_is_opponent;
 	public:
-		Hand();
+		Hand(bool is_opponent = false);
 		void add_card(BattleCard card);
 		void remove_card(int i);
 		void update();
@@ -21,6 +22,7 @@ class Hand {
 		int card_count() const;
 		BattleCard get_card(int i) const;
 		bn::fixed_point get_card_pos(int i) const;
+		void set_visible(bool visible);
 };
 
 #endif // GUARD_HAND_H

@@ -1,55 +1,86 @@
 #include "cursor_controller.h"
+#include "zone.h"
 
 CursorController::CursorController(Cursor& cursor, Battle& battle) : m_cursor(cursor), m_battle(battle) {
-	snap(BENCH_START);
-}
-
-void CursorController::snap(int i) {
-	m_cursor.set_zone_idx(i);
-	m_cursor.snap_to(m_battle.field().get_zone(i).m_pos);
+	m_cursor.set_hand_idx(0);
+	m_cursor.set_pos(m_battle.player_hand().get_card_pos(0));
 }
 
 void CursorController::update() {
-	int i = m_cursor.zone_idx();
+	ZoneId zone = m_cursor.zone();
+	
 	if(bn::keypad::a_pressed()) {
 		m_battle.try_draw_card_player();
 	}
 	
+	// Left
 	if(bn::keypad::left_pressed()) {
-		if(i >= BENCH_START && i <= BENCH_END) {
-			snap(i == BENCH_START ? BENCH_END : i - 1);
-		} else if(i >= OPP_BENCH_START && i <= OPP_BENCH_END) {
-			snap(i == OPP_BENCH_START ? OPP_BENCH_END : i - 1);
-		}else if(i == ACTIVE || i == OPP_ACTIVE) {
-			snap(STADIUM);
+		if(m_cursor.mode() == CursorMode::HAND) {
+			if(m_cursor.hand_idx() > 0) {
+				int i = m_cursor.hand_idx() - 1;
+				m_cursor.set_hand_idx(i);
+				m_cursor.set_pos(m_battle.player_hand().get_card_pos(i));
+			}
+		} else if(zone >= ZoneId::PLAYER_BENCH_1 && zone <= ZoneId::PLAYER_BENCH_5) {
+			snap_to_zone(zone == ZoneId::PLAYER_BENCH_1 ? ZoneId::PLAYER_BENCH_5 : static_cast<ZoneId>(static_cast<int>(zone) - 1));
+		} else if(zone >= ZoneId::OPPONENT_BENCH_1 && zone <= ZoneId::OPPONENT_BENCH_5) {
+			snap_to_zone(zone == ZoneId::OPPONENT_BENCH_1 ? ZoneId::OPPONENT_BENCH_5 : static_cast<ZoneId>(static_cast<int>(zone) - 1));
+		} else if(zone == ZoneId::PLAYER_ACTIVE || zone == ZoneId::OPPONENT_ACTIVE) {
+			snap_to_zone(ZoneId::STADIUM);
 		}
 	} else if(bn::keypad::right_pressed()) {
-		if(i >= BENCH_START && i <= BENCH_END) {
-			snap(i == BENCH_END ? BENCH_START : i + 1);
-		} else if(i >= OPP_BENCH_START && i <= OPP_BENCH_END) {
-			snap(i == OPP_BENCH_END ? OPP_BENCH_START : i + 1);
-		}else if(i == STADIUM) {
-			i = ACTIVE;
+		if(m_cursor.mode() == CursorMode::HAND) {
+			if(m_cursor.hand_idx() < m_battle.player_hand().card_count() - 1) {
+				int i = m_cursor.hand_idx() + 1;
+				m_cursor.set_hand_idx(i);
+				m_cursor.set_pos(m_battle.player_hand().get_card_pos(i));
+			}
+		} else if(zone >= ZoneId::PLAYER_BENCH_1 && zone <= ZoneId::PLAYER_BENCH_5) {
+			snap_to_zone(zone == ZoneId::PLAYER_BENCH_5 ? ZoneId::PLAYER_BENCH_1 : static_cast<ZoneId>(static_cast<int>(zone) + 1));
+		} else if(zone >= ZoneId::OPPONENT_BENCH_1 && zone <= ZoneId::OPPONENT_BENCH_5) {
+			snap_to_zone(zone == ZoneId::OPPONENT_BENCH_5 ? ZoneId::PLAYER_BENCH_1 : static_cast<ZoneId>(static_cast<int>(zone) + 1));
+		} else if(zone == ZoneId::STADIUM) {
 			m_battle.field().scroll_to_player();
-			snap(ACTIVE);
+			m_battle.opponent_hand().set_visible(false);
+			m_battle.player_hand().set_visible(true);
+			snap_to_zone(ZoneId::PLAYER_ACTIVE);
 		}
 	} else if(bn::keypad::up_pressed()) {
-		if(i >= BENCH_START && i <= BENCH_END) {
-			snap(ACTIVE);
-		} else if(i == ACTIVE) {
+		if(m_cursor.mode() == CursorMode::HAND) {
+			m_cursor.set_mode(CursorMode::FIELD);
+			snap_to_zone(ZoneId::PLAYER_BENCH_1);
+		} else if(zone >= ZoneId::PLAYER_BENCH_1 && zone <= ZoneId::PLAYER_BENCH_5) {
+			snap_to_zone(ZoneId::PLAYER_ACTIVE);
+		} else if(zone == ZoneId::PLAYER_ACTIVE) {
 			m_battle.field().scroll_to_opponent();
-			snap(OPP_ACTIVE);
-		} else if(i == OPP_ACTIVE) {
-			snap(OPP_BENCH_START);
+			m_battle.opponent_hand().set_visible(true);
+			m_battle.player_hand().set_visible(false);
+			snap_to_zone(ZoneId::OPPONENT_ACTIVE);
+		} else if(zone == ZoneId::OPPONENT_ACTIVE) {
+			snap_to_zone(ZoneId::OPPONENT_BENCH_1);
 		}
 	} else if(bn::keypad::down_pressed()) {
-		if(i == ACTIVE) {
-			snap(BENCH_START);
-		} else if(i >= OPP_BENCH_START && i <= OPP_BENCH_END) {
-			snap(OPP_ACTIVE);
-		}else if(i == OPP_ACTIVE) {
+		if(zone == ZoneId::PLAYER_ACTIVE) {
+			snap_to_zone(ZoneId::PLAYER_BENCH_1);
+		} else if(zone >= ZoneId::PLAYER_BENCH_1 && zone <= ZoneId::PLAYER_BENCH_5) {
+			if(m_battle.player_hand().card_count() > 0) {
+				m_cursor.set_mode(CursorMode::HAND);
+				m_cursor.set_hand_idx(0);
+				bn::fixed_point pos = m_battle.player_hand().get_card_pos(0);
+				m_cursor.set_pos(pos);
+			}
+		} else if(zone >= ZoneId::OPPONENT_BENCH_1 && zone <= ZoneId::OPPONENT_BENCH_5) {
+			snap_to_zone(ZoneId::OPPONENT_ACTIVE);
+		} else if(zone == ZoneId::OPPONENT_ACTIVE) {
 			m_battle.field().scroll_to_player();
-			snap(ACTIVE);
+			m_battle.opponent_hand().set_visible(false);
+			m_battle.player_hand().set_visible(true);
+			snap_to_zone(ZoneId::PLAYER_ACTIVE);
 		}
 	}
+}
+
+void CursorController::snap_to_zone(ZoneId id) {
+	m_cursor.set_zone(id);
+	m_cursor.set_pos(m_battle.field().get_zone(id).m_pos);
 }
