@@ -21,9 +21,10 @@ enum class ZoneId {
 struct Zone {
 	ZoneId m_zone;
 	bn::fixed_point m_pos;
+	bn::fixed_point m_opponent_pos;
 	bool occupied = false;
 	Zone() = default;
-	Zone(ZoneId zone, bn::fixed_point pos) : m_zone(zone), m_pos(pos) {}
+	Zone(ZoneId zone, bn::fixed_point pos, bn::fixed_point opponent_pos=bn::fixed_point(0,0)) : m_zone(zone), m_pos(pos), m_opponent_pos(opponent_pos) {}
 };
 
 #endif // GUARD_ZONE_H

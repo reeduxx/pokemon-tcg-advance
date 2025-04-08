@@ -15,7 +15,7 @@ class Cursor {
 		bn::sprite_ptr m_sprite;
 		bn::fixed_point m_pos;
 		int m_timer;
-		CursorMode m_mode = CursorMode::FIELD;
+		CursorMode m_mode = CursorMode::HAND;
 		ZoneId m_zone_id = ZoneId::PLAYER_BENCH_1;
 		int m_hand_idx = 0;
 	public:

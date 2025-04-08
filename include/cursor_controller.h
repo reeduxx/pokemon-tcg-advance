@@ -14,7 +14,7 @@ class CursorController {
 		CursorController(Cursor& cursor, Battle& battle);
 		void update();
 	private:
-		void snap_to_zone(ZoneId id);
+		void snap_to_zone(ZoneId id, Side side=Side::SIDE_PLAYER);
 };
 
 #endif // GUARD_CURSOR_CONTROLLER_H

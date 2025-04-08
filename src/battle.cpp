@@ -1,3 +1,4 @@
+#include "bn_log.h"
 #include "battle.h"
 #include "card_ids.h"
 
@@ -8,24 +9,15 @@ Battle::Battle() {
 }
 
 void Battle::init_decks() {
-	m_player_deck.clear();
-	m_player_deck.push_back({UUID::BASE_SET_BULBASAUR});
-	m_player_deck.push_back({UUID::BASE_SET_IVYSAUR});
-	m_player_deck.push_back({UUID::BASE_SET_VENUSAUR});
-	m_player_deck.push_back({UUID::BASE_SET_CHARMANDER});
-	m_player_deck.push_back({UUID::BASE_SET_CHARMELEON});
-	m_player_deck.push_back({UUID::BASE_SET_CHARIZARD});
-	m_player_deck.push_back({UUID::BASE_SET_SQUIRTLE});
-	m_player_deck.push_back({UUID::BASE_SET_WARTORTLE});
-	m_player_deck.push_back({UUID::BASE_SET_BLASTOISE});
-	m_player_deck.push_back({UUID::BASE_SET_CATERPIE});
+	load_deck_id(DeckId::DECK_OVERGROWTH, m_player_deck);
+	load_deck_id(DeckId::DECK_ZAP, m_opponent_deck);
 	shuffle_deck(m_player_deck);
-	m_opponent_deck = m_player_deck;
 	shuffle_deck(m_opponent_deck);
 }
 
 void Battle::draw_starting_hands() {
 	for(int i = 0; i < 7; i++) {
+		BN_LOG("Drawing card. . .");
 		draw_card(m_player_deck, m_player_hand);
 		draw_card(m_opponent_deck, m_opponent_hand);
 	}
