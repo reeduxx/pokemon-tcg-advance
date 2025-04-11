@@ -1,7 +1,6 @@
 #ifndef GUARD_CURSOR_CONTROLLER_H
 #define GUARD_CURSOR_CONTROLLER_H
 
-#include "bn_keypad.h"
 #include "battle.h"
 #include "cursor.h"
 #include "field.h"

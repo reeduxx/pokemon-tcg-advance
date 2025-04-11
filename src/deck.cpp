@@ -1,5 +1,4 @@
 #include "bn_core.h"
-#include "bn_log.h"
 #include "bn_seed_random.h"
 #include "battle_card.h"
 #include "deck.h"
@@ -15,12 +14,10 @@ void shuffle_deck(Deck& deck) {
 
 void draw_card(Deck& deck, Hand& hand) {
 	if(deck.empty() || hand.card_count() >= 10) {
-		BN_LOG("Deck is empty or hand is full.");
 		return;
 	}
 	
 	BattleCard card = deck.back();
-	BN_LOG(card.card_id);
 	deck.pop_back();
 	hand.add_card(card);
 }
@@ -37,10 +34,6 @@ void load_deck_id(DeckId id, Deck& deck) {
 				card.card_id = def.cards[i];
 				card.is_face_down = false;
 				deck.push_back(card);
-			}
-			
-			for(const BattleCard& card : deck) {
-				BN_LOG("Card ID: ", card.card_id);
 			}
 			
 			break;

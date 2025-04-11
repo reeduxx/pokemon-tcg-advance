@@ -1,7 +1,7 @@
 #include "bn_regular_bg_items_field.h"
 #include "field.h"
 
-Field::Field() : m_bg(bn::regular_bg_items::field.create_bg(0, -48)), m_scroll_curr(0, -48), m_scroll_target(0, -48) {
+Field::Field() : m_bg(bn::regular_bg_items::field.create_bg(0, 0)), m_scroll_curr(0, -48), m_scroll_target(0, -48) {
 	initialize_zones();
 }
 

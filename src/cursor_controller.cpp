@@ -1,3 +1,4 @@
+#include "bn_keypad.h"
 #include "cursor_controller.h"
 #include "zone.h"
 
@@ -7,6 +8,12 @@ CursorController::CursorController(Cursor& cursor, Battle& battle) : m_cursor(cu
 }
 
 void CursorController::update() {
+	if(m_battle.is_opponent_turn()) {
+		m_cursor.set_visible(false);
+	} else {
+		m_cursor.set_visible(true);
+	}
+	
 	ZoneId zone = m_cursor.zone();
 	
 	if(m_cursor.mode() == CursorMode::HAND && m_cursor.position() != m_battle.player_hand().get_card_pos(m_cursor.hand_idx())) {

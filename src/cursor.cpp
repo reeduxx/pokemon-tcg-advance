@@ -46,3 +46,7 @@ void Cursor::set_hand_idx(int i) {
 int Cursor::hand_idx() const {
 	return m_hand_idx;
 }
+
+void Cursor::set_visible(bool visible) {
+	m_sprite.set_visible(visible);
+}

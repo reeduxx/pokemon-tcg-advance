@@ -1,4 +1,3 @@
-#include "bn_log.h"
 #include "bn_sprite_items_card_back.h"
 #include "bn_sprite_items_card_sheet_1.h"
 #include "bn_sprite_items_card_sheet_2.h"
@@ -14,7 +13,6 @@ Hand::Hand(bool is_opponent) : m_is_opponent(is_opponent) {}
 
 void Hand::add_card(BattleCard card) {
 	if(m_cards.full()) {
-		BN_LOG("Hand is full.");
 		return;
 	}
 	
@@ -54,16 +52,12 @@ void Hand::add_card(BattleCard card) {
 			if(card_data.pokemon.primary_type == Type::TYPE_METAL)
 				sprite = bn::sprite_items::card_sheet_3.create_sprite(pos, 0);
 		} else if(card_data.header.type == CardType::CARD_ENERGY) {
-			if(card_data.energy.element == Type::TYPE_GRASS) {
-				BN_LOG("Creating Grass Energy sprite. . .");
+			if(card_data.energy.element == Type::TYPE_GRASS)
 				sprite = bn::sprite_items::energy_sheet_1.create_sprite(pos, 0);
-			}
 			if(card_data.energy.element == Type::TYPE_FIRE)
 				sprite = bn::sprite_items::energy_sheet_1.create_sprite(pos, 1);
-			if(card_data.energy.element == Type::TYPE_WATER) {
-				BN_LOG("Creating Water Energy sprite. . .");
+			if(card_data.energy.element == Type::TYPE_WATER)
 				sprite = bn::sprite_items::energy_sheet_1.create_sprite(pos, 2);
-			}
 			if(card_data.energy.element == Type::TYPE_LIGHTNING)
 				sprite = bn::sprite_items::energy_sheet_1.create_sprite(pos, 3);
 			if(card_data.energy.element == Type::TYPE_FIGHTING)
@@ -101,13 +95,13 @@ void Hand::update() {
 	
 	switch(m_cards.size()) {
 		case 10:
-			buffer = 0;
+			buffer = 1;
 			break;
 		case 9:
 			buffer = 2;
 			break;
 		default:
-			buffer = 4;
+			buffer = 3;
 	}
 	
 	int card_visual_width = 22 + buffer;
@@ -131,6 +125,10 @@ BattleCard Hand::get_card(int i) const {
 }
 
 bn::fixed_point Hand::get_card_pos(int i) const {
+	if(i < 0 || i >= m_pos.size()) {
+		return bn::fixed_point(0, 0);
+	}
+	
 	return m_pos[i];
 }
 

@@ -29,6 +29,7 @@ class Cursor {
 		CursorMode mode() const;
 		void set_hand_idx(int i);
 		int hand_idx() const;
+		void set_visible(bool visible);
 };
 
 #endif // GUARD_CURSOR_H
