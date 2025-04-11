@@ -38,6 +38,7 @@ Pokémon TCG: Advance is an ambitious project to bring the classic TCG to the Ga
 - [ ] Card art ![](https://geps.dev/progress/0)
 - [ ] Deck/collection management
 - [ ] Story mode
+- [ ] Daily/weekly events
 - [ ] Booster packs
 - [ ] NPC battle AI
 - [ ] Link trading & battling
