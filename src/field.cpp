@@ -1,4 +1,7 @@
 #include "bn_regular_bg_items_field.h"
+#include "bn_sprite_items_card_back.h"
+#include "card.h"
+#include "cards.h"
 #include "field.h"
 
 Field::Field() : m_bg(bn::regular_bg_items::field.create_bg(0, 0)), m_scroll_curr(0, -48), m_scroll_target(0, -48) {
@@ -57,4 +60,19 @@ void Field::set_side(Side side) {
 
 Side Field::side() const {
 	return m_side;
+}
+
+void Field::place_card(ZoneId id, const BattleCard& card) {
+	// TODO: Implement card placement
+	Zone& zone = get_zone(id);
+
+	if(zone.occupied) {
+		return;
+	}
+
+	zone.occupied = true;
+	zone.card = card;
+	bn::fixed_point pos = zone.m_pos;
+	const Card* card_data = get_card_by_id(card.card_id);
+	zone.sprite = bn::sprite_items::card_back.create_sprite(pos);
 }

@@ -1,6 +1,6 @@
-#include "bn_random.h"
 #include "bn_sprite_items_chansey_coin.h"
 #include "coin_flipper.h"
+#include "rng.h"
 
 CoinFlipper::CoinFlipper() {
 	m_sprite = bn::sprite_items::chansey_coin.create_sprite(0, 0);
@@ -18,10 +18,9 @@ void CoinFlipper::update() {
 }
 
 void CoinFlipper::start_flip() {
-	bn::random rand;
 	m_flipping = true;
 	m_sprite->set_visible(true);
-	m_result = (rand.get_int(2) == 0) ? CoinResult::HEADS : CoinResult::TAILS;
+	m_result = (RNG::instance().get_int(2) == 0) ? CoinResult::HEADS : CoinResult::TAILS;
 	
 	if(m_result == CoinResult::HEADS) {
 		m_anim = bn::create_sprite_animate_action_once(*m_sprite, 6, bn::sprite_items::chansey_coin.tiles_item(), 0, 1, 3, 5, 6, 4, 3, 2, 0);

@@ -1,6 +1,9 @@
 #ifndef GUARD_ZONE_H
 #define GUARD_ZONE_H
 
+#include "bn_sprite_ptr.h"
+#include "battle_card.h"
+
 enum class ZoneId {
 	PLAYER_BENCH_1,
 	PLAYER_BENCH_2,
@@ -23,6 +26,8 @@ struct Zone {
 	bn::fixed_point m_pos;
 	bn::fixed_point m_opponent_pos;
 	bool occupied = false;
+	BattleCard card;
+	bn::optional<bn::sprite_ptr> sprite;
 	Zone() = default;
 	Zone(ZoneId zone, bn::fixed_point pos, bn::fixed_point opponent_pos=bn::fixed_point(0,0)) : m_zone(zone), m_pos(pos), m_opponent_pos(opponent_pos) {}
 };

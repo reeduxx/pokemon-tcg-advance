@@ -1,8 +1,10 @@
 #include "bn_keypad.h"
+#include "bn_log.h"
 #include "battle.h"
 #include "card_ids.h"
+#include "cards.h"
 
-Battle::Battle() {
+Battle::Battle(Cursor& cursor) : m_cursor(cursor) {
 	init_decks();
 	m_state = BattleState::COIN_FLIP;
 }
@@ -24,33 +26,36 @@ void Battle::draw_starting_hands() {
 }
 
 void Battle::update() {
+	BN_LOG(static_cast<int>(m_state));
 	switch(m_state) {
 		case BattleState::COIN_FLIP:
-			update_coin_flip();
+			task_coin_flip();
 			return;
 		case BattleState::SETUP_HANDS:
-			update_setup_hands();
+			task_setup_hands();
 			break;
 		case BattleState::SETUP_ACTIVE:
-			update_setup_active();
+			task_setup_active();
 			break;
 		case BattleState::SETUP_BENCH:
-			update_setup_bench();
+			task_setup_bench();
 			break;
 		case BattleState::SETUP_PRIZES:
-			update_setup_prizes();
+			task_setup_prizes();
 			break;
-		case BattleState::READY_TO_START:
-			start_turn();
+		case BattleState::BATTLE_START:
+			task_start_turn();
 			break;
 		case BattleState::PLAYER_TURN:
-			update_player_turn();
+			BN_LOG("Player turn");
+			task_player_turn();
 			break;
 		case BattleState::OPPONENT_TURN:
-			update_opponent_turn();
+			BN_LOG("Opponent turn");
+			task_opponent_turn();
 			break;
 		case BattleState::CHECK_WIN:
-			check_win_conditions();
+			task_check_win_conditions();
 			break;
 	}
 	
@@ -59,59 +64,96 @@ void Battle::update() {
 	m_opponent_hand.update();
 }
 
-void Battle::update_coin_flip() {
+void Battle::task_coin_flip() {
 	// TODO: Implement coin flipping + first turn player determination
 	if(!m_coin_flipping) {
 		m_flipper.start_flip();
 		m_coin_flipping = true;
 	}
 	
-	m_flipper.update();
-	
 	if(m_flipper.done()) {
 		m_turn_player = (m_flipper.result() == CoinResult::HEADS) ? TurnPlayer::PLAYER : TurnPlayer::OPPONENT;
-		m_flipper.destroy();
-		m_state = BattleState::SETUP_HANDS;
+		
+		if(bn::keypad::a_pressed()) {
+			m_flipper.destroy();
+			m_state = BattleState::SETUP_HANDS;
+		}
+	} else {
+		m_flipper.update();
 	}
 }
 
-void Battle::update_setup_hands() {
+void Battle::task_setup_hands() {
 	draw_starting_hands();
 	// TODO: Implement mulligans
+	m_field.scroll_to_player();
 	m_state = BattleState::SETUP_ACTIVE;
 }
 
-void Battle::update_setup_active() {
+void Battle::task_setup_active() {
 	// TODO: Implement putting Pokemon in the active spot
-	m_state = BattleState::SETUP_BENCH;
+	if(bn::keypad::a_pressed()) {
+		int i = m_cursor.hand_idx();
+
+		if(i >= 0 && i < m_player_hand.card_count()) {
+			BattleCard card = m_player_hand.get_card(i);
+
+			if(is_basic_pokemon(card)) {
+				m_field.place_card(ZoneId::PLAYER_ACTIVE, card);
+				m_player_hand.remove_card(i);
+				m_cursor.set_hand_idx(0);
+				m_state = BattleState::SETUP_BENCH;
+			}
+		}
+	}
 }
 
-void Battle::update_setup_bench() {
-	// TODO: Implement putting Pokemon on the bench
-	m_state = BattleState::SETUP_PRIZES;
+void Battle::task_setup_bench() {
+	static int bench_i = 0;
+
+	if(bn::keypad::a_pressed()) {
+		int i = m_cursor.hand_idx();
+
+		if(i >= 0 && i < m_player_hand.card_count()) {
+			BattleCard card = m_player_hand.get_card(i);
+
+			if(is_basic_pokemon(card) && bench_i < 5) {
+				ZoneId zone = static_cast<ZoneId>(static_cast<int>(ZoneId::PLAYER_BENCH_1) + bench_i);
+				m_field.place_card(zone, card);
+				m_player_hand.remove_card(i);
+				m_cursor.set_hand_idx(0);
+				bench_i++;
+			}
+		}
+	}
+
+	if(bench_i >= 5 || bn::keypad::start_pressed()) {
+		bench_i = 0;
+		m_state = BattleState::SETUP_PRIZES;
+	}
 }
 
-void Battle::update_setup_prizes() {
+void Battle::task_setup_prizes() {
 	// TODO: Implement prize cards
-	m_state = BattleState::READY_TO_START;
+	m_state = BattleState::BATTLE_START;
 }
 
-void Battle::start_turn() {
+void Battle::task_start_turn() {
 	reset_phase();
 	m_state = (m_turn_player == TurnPlayer::PLAYER) ? BattleState::PLAYER_TURN : BattleState::OPPONENT_TURN;
 }
 
-void Battle::update_player_turn() {
+void Battle::task_player_turn() {
 	update_phase();
 	m_state = BattleState::OPPONENT_TURN;
 }
 
-void Battle::update_opponent_turn() {
+void Battle::task_opponent_turn() {
 	update_phase();
 	m_state = BattleState::PLAYER_TURN;
 }
 
-void Battle::check_win_conditions() {
+void Battle::task_check_win_conditions() {
 	// TODO: Implement win conditions
 }
 
@@ -143,8 +185,8 @@ void Battle::update_phase() {
 			m_phase = TurnPhase::END;
 			break;
 		case TurnPhase::END:
-			m_turn_player = (m_turn_player == TurnPlayer::PLAYER) ? TurnPlayer::OPPONENT : TurnPlayer::PLAYER;
 			reset_phase();
+			m_turn_player = (m_turn_player == TurnPlayer::PLAYER) ? TurnPlayer::OPPONENT : TurnPlayer::PLAYER;
 			break;
 	}
 }
@@ -199,4 +241,13 @@ Hand Battle::player_hand() const {
 
 Hand Battle::opponent_hand() const {
 	return m_opponent_hand;
+}
+
+BattleState Battle::current_state() const {
+	return m_state;
+}
+
+bool Battle::is_basic_pokemon(const BattleCard& card) const {
+	const Card* data = get_card_by_id(card.card_id);
+	return data && data->header.type == CardType::CARD_POKEMON && (data->pokemon.stage == 0 || data->pokemon.stage == 1);
 }

@@ -8,7 +8,7 @@ CursorController::CursorController(Cursor& cursor, Battle& battle) : m_cursor(cu
 }
 
 void CursorController::update() {
-	if(m_battle.is_opponent_turn()) {
+	if(m_battle.current_state() == BattleState::COIN_FLIP || m_battle.is_opponent_turn()) {
 		m_cursor.set_visible(false);
 	} else {
 		m_cursor.set_visible(true);
@@ -18,10 +18,6 @@ void CursorController::update() {
 	
 	if(m_cursor.mode() == CursorMode::HAND && m_cursor.position() != m_battle.player_hand().get_card_pos(m_cursor.hand_idx())) {
 		m_cursor.set_pos(m_battle.player_hand().get_card_pos(m_cursor.hand_idx()));
-	}
-	
-	if(bn::keypad::a_pressed()) {
-		m_battle.try_draw_card_player();
 	}
 	
 	// Left
@@ -62,7 +58,7 @@ void CursorController::update() {
 		}
 	}
 	// Up
-	if(bn::keypad::up_pressed()) {
+	if(bn::keypad::up_pressed() && m_battle.current_state() >= BattleState::BATTLE_START) {
 		if(m_cursor.mode() == CursorMode::HAND) {
 			m_cursor.set_mode(CursorMode::FIELD);
 			snap_to_zone(ZoneId::PLAYER_BENCH_1);
@@ -78,7 +74,7 @@ void CursorController::update() {
 		}
 	}
 	// Down
-	if(bn::keypad::down_pressed()) {
+	if(bn::keypad::down_pressed() && m_battle.current_state() >= BattleState::BATTLE_START) {
 		if(zone == ZoneId::PLAYER_ACTIVE) {
 			snap_to_zone(ZoneId::PLAYER_BENCH_1);
 		} else if(zone >= ZoneId::PLAYER_BENCH_1 && zone <= ZoneId::PLAYER_BENCH_5 && m_cursor.mode() != CursorMode::HAND) {

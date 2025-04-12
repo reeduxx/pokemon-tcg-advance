@@ -2,6 +2,7 @@
 #define GUARD_BATTLE_H
 
 #include "coin_flipper.h"
+#include "cursor.h"
 #include "deck.h"
 #include "field.h"
 #include "hand.h"
@@ -17,7 +18,7 @@ enum class BattleState {
 	SETUP_ACTIVE,
 	SETUP_BENCH,
 	SETUP_PRIZES,
-	READY_TO_START,
+	BATTLE_START,
 	PLAYER_TURN,
 	OPPONENT_TURN,
 	CHECK_WIN
@@ -32,6 +33,7 @@ enum class TurnPhase {
 
 class Battle {
 	private:
+		Cursor& m_cursor;
 		Deck m_player_deck;
 		Deck m_opponent_deck;
 		CoinFlipper m_flipper;
@@ -43,7 +45,7 @@ class Battle {
 		BattleState m_state;
 		TurnPhase m_phase;
 	public:
-		Battle();
+		Battle(Cursor& cursor);
 		void update();
 		Field& field();
 		const Field& field() const;
@@ -57,19 +59,21 @@ class Battle {
 		void try_draw_card_opponent();
 		Hand player_hand() const;
 		Hand opponent_hand() const;
+		BattleState current_state() const;
 	private:
 		void init_decks();
 		void draw_starting_hands();
-		void update_coin_flip();
-		void update_setup_hands();
-		void update_setup_active();
-		void update_setup_bench();
-		void update_setup_prizes();
-		void start_turn();
-		void update_player_turn();
-		void update_opponent_turn();
-		void check_win_conditions();
+		void task_coin_flip();
+		void task_setup_hands();
+		void task_setup_active();
+		void task_setup_bench();
+		void task_setup_prizes();
+		void task_start_turn();
+		void task_player_turn();
+		void task_opponent_turn();
+		void task_check_win_conditions();
 		void update_phase();
+		bool is_basic_pokemon(const BattleCard& card) const;
 };
 
 #endif // GUARD_BATTLE_H

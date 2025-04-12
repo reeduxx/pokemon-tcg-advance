@@ -138,6 +138,7 @@ void Hand::remove_card(int i) {
 	}
 	
 	m_cards.erase(m_cards.begin() + i);
+	m_pos.erase(m_pos.begin() + i);
 	m_sprites[i].set_visible(false);
 	m_sprites.erase(m_sprites.begin() + i);
 }

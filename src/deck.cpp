@@ -1,13 +1,10 @@
-#include "bn_core.h"
-#include "bn_seed_random.h"
 #include "battle_card.h"
 #include "deck.h"
+#include "rng.h"
 
 void shuffle_deck(Deck& deck) {
-	bn::seed_random rand(bn::core::current_cpu_ticks());
-	
 	for(int i = 0; i < deck.size(); ++i) {
-		int j = rand.get_unbiased_int(deck.size());
+		int j = RNG::instance().get_int(deck.size());
 		bn::swap(deck[i], deck[j]);
 	}
 }

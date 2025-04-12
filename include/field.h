@@ -4,6 +4,7 @@
 #include "bn_array.h"
 #include "bn_fixed_point.h"
 #include "bn_regular_bg_ptr.h"
+#include "battle_card.h"
 #include "zone.h"
 
 enum class Side {
@@ -29,6 +30,7 @@ class Field {
 		Zone& get_zone(ZoneId id);
 		int zone_count() const;
 		Side side() const;
+		void place_card(ZoneId id, const BattleCard& card);
 };
 
 #endif // GUARD_FIELD_H
