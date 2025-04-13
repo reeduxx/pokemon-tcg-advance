@@ -30,6 +30,7 @@ struct Zone {
 	bn::optional<bn::sprite_ptr> sprite;
 	Zone() = default;
 	Zone(ZoneId zone, bn::fixed_point pos, bn::fixed_point opponent_pos=bn::fixed_point(0,0)) : m_zone(zone), m_pos(pos), m_opponent_pos(opponent_pos) {}
+	void set_visible(bool visible) { if(sprite.has_value()) sprite->set_visible(visible); }
 };
 
 #endif // GUARD_ZONE_H

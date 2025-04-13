@@ -4,6 +4,6 @@
 #include <cstdint>
 
 const char* get_card_name(uint8_t name_id);
-extern const uint8_t CARD_NAME_COUNT;
+extern const uint16_t CARD_NAME_COUNT;
 
 #endif // CARD_NAMES_H

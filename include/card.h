@@ -72,6 +72,8 @@ enum class TrainerSubtype : uint8_t {
 	SUBTYPE_ITEM,
 	SUBTYPE_SUPPORTER,
 	SUBTYPE_STADIUM,
+	SUBTYPE_TOOL,
+	SUBTYPE_TM,
 	NONE = 0xFF
 };
 

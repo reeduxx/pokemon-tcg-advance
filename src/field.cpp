@@ -3,6 +3,7 @@
 #include "card.h"
 #include "cards.h"
 #include "field.h"
+#include "sprite_factory.h"
 
 Field::Field() : m_bg(bn::regular_bg_items::field.create_bg(0, 0)), m_scroll_curr(0, 0), m_scroll_target(0, -48) {
 	initialize_zones();
@@ -19,11 +20,27 @@ void Field::update() {
 void Field::scroll_to_player() {
 	m_scroll_target = bn::fixed_point(0, -48);
 	set_side(Side::SIDE_PLAYER);
+
+	for(auto& zone : m_zones) {
+		if(static_cast<int>(zone.m_zone) <= static_cast<int>(ZoneId::STADIUM)) {
+			zone.set_visible(true);
+		} else {
+			zone.set_visible(false);
+		}
+	}
 }
 
 void Field::scroll_to_opponent() {
 	m_scroll_target = bn::fixed_point(0, 48);
 	set_side(Side::SIDE_OPPONENT);
+
+	for(auto& zone : m_zones) {
+		if(static_cast<int>(zone.m_zone) >= static_cast<int>(ZoneId::STADIUM)) {
+			zone.set_visible(true);
+		} else {
+			zone.set_visible(false);
+		}
+	}
 }
 
 const Zone& Field::get_zone(ZoneId id) const {
@@ -73,6 +90,6 @@ void Field::place_card(ZoneId id, const BattleCard& card) {
 	zone.occupied = true;
 	zone.card = card;
 	bn::fixed_point pos = zone.m_pos;
-	const Card* card_data = get_card_by_id(card.card_id);
-	zone.sprite = bn::sprite_items::card_back.create_sprite(pos);
+	zone.sprite = SpriteFactory::create_sprite(card, pos);
+	zone.sprite->set_z_order(1);
 }
