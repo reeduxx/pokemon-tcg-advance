@@ -1,4 +1,5 @@
 #include "bn_keypad.h"
+#include "bn_log.h"
 #include "cursor_controller.h"
 #include "zone.h"
 
@@ -8,7 +9,7 @@ CursorController::CursorController(Cursor& cursor, Battle& battle) : m_cursor(cu
 }
 
 void CursorController::update() {
-	if(m_battle.current_state() == BattleState::COIN_FLIP || m_battle.is_opponent_turn()) {
+	if(m_battle.current_state() == BattleState::COIN_FLIP || m_battle.current_state() == BattleState::OPPONENT_TURN) {
 		m_cursor.set_visible(false);
 	} else {
 		m_cursor.set_visible(true);

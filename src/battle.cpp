@@ -1,5 +1,4 @@
 #include "bn_keypad.h"
-#include "bn_log.h"
 #include "battle.h"
 #include "card_ids.h"
 #include "cards.h"
@@ -26,7 +25,6 @@ void Battle::draw_starting_hands() {
 }
 
 void Battle::update() {
-	BN_LOG(static_cast<int>(m_state));
 	switch(m_state) {
 		case BattleState::COIN_FLIP:
 			task_coin_flip();
@@ -47,11 +45,9 @@ void Battle::update() {
 			task_start_turn();
 			break;
 		case BattleState::PLAYER_TURN:
-			BN_LOG("Player turn");
 			task_player_turn();
 			break;
 		case BattleState::OPPONENT_TURN:
-			BN_LOG("Opponent turn");
 			task_opponent_turn();
 			break;
 		case BattleState::CHECK_WIN:
@@ -65,7 +61,6 @@ void Battle::update() {
 }
 
 void Battle::task_coin_flip() {
-	// TODO: Implement coin flipping + first turn player determination
 	if(!m_coin_flipping) {
 		m_flipper.start_flip();
 		m_coin_flipping = true;
@@ -91,7 +86,6 @@ void Battle::task_setup_hands() {
 }
 
 void Battle::task_setup_active() {
-	// TODO: Implement putting Pokemon in the active spot
 	if(bn::keypad::a_pressed()) {
 		int i = m_cursor.hand_idx();
 
@@ -145,12 +139,14 @@ void Battle::task_start_turn() {
 
 void Battle::task_player_turn() {
 	update_phase();
-	m_state = BattleState::OPPONENT_TURN;
+	if(is_phase(TurnPhase::END))
+		m_state = BattleState::OPPONENT_TURN;
 }
 
 void Battle::task_opponent_turn() {
 	update_phase();
-	m_state = BattleState::PLAYER_TURN;
+	if(is_phase(TurnPhase::END))
+		m_state = BattleState::PLAYER_TURN;
 }
 
 void Battle::task_check_win_conditions() {
