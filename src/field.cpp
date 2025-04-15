@@ -1,7 +1,4 @@
 #include "bn_regular_bg_items_field.h"
-#include "bn_sprite_items_card_back.h"
-#include "card.h"
-#include "cards.h"
 #include "field.h"
 #include "sprite_factory.h"
 
@@ -80,7 +77,6 @@ Side Field::side() const {
 }
 
 void Field::place_card(ZoneId id, const BattleCard& card) {
-	// TODO: Implement card placement
 	Zone& zone = get_zone(id);
 
 	if(zone.occupied) {

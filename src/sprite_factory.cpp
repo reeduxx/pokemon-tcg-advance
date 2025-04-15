@@ -12,7 +12,7 @@ bn::sprite_ptr SpriteFactory::create_sprite(const BattleCard& card, const bn::fi
     if(card.is_face_down) {
         bn::sprite_ptr sprite = bn::sprite_items::card_back.create_sprite(pos);
         
-        if(is_opponent) sprite.set_horizontal_flip(true);
+        if(is_opponent) sprite.set_vertical_flip(true);
 
         return sprite;
     }

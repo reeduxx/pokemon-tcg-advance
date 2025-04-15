@@ -1,6 +1,5 @@
 #include "bn_core.h"
 #include "bn_keypad.h"
-#include "bn_log.h"
 #include "battle.h"
 #include "cursor.h"
 #include "cursor_controller.h"
@@ -18,9 +17,8 @@ int main() {
 		bn::core::update();
 	}
 
-	BN_LOG(seed);
 	RNG::instance().seed(seed);
-
+	
     while(true) {
 		cursor_controller.update();
 		cursor.update();
