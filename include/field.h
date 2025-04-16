@@ -3,6 +3,7 @@
 
 #include "bn_array.h"
 #include "bn_fixed_point.h"
+#include "bn_optional.h"
 #include "bn_regular_bg_ptr.h"
 #include "battle_card.h"
 #include "zone.h"
@@ -15,6 +16,7 @@ enum class Side {
 class Field {
 	private:
 		bn::regular_bg_ptr m_bg;
+		bn::optional<bn::regular_bg_ptr> m_name_bar;
 		bn::fixed_point m_scroll_curr;
 		bn::fixed_point m_scroll_target;
 		Side m_side;

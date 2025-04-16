@@ -2,4 +2,6 @@
 build/
 *.elf
 *.gba
+*.mp4
+*.png
 *.sav

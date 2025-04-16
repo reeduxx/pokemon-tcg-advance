@@ -52,7 +52,7 @@ void Hand::update() {
 	
 	for(int i = 0; i < count; i++) {
 		int x = start_x + i * card_visual_width;
-		int y = m_is_opponent ? -60 : 60;
+		int y = m_is_opponent ? -61 : 37;
 		m_pos[i] = bn::fixed_point(x, y);
 		m_sprites[i].set_position(m_pos[i]);
 	}

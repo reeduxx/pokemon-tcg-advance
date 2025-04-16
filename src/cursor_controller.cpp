@@ -1,5 +1,7 @@
 #include "bn_keypad.h"
 #include "bn_log.h"
+#include "card_names.h"
+#include "cards.h"
 #include "cursor_controller.h"
 #include "zone.h"
 
