@@ -42,26 +42,23 @@ Pokémon TCG: Advance is an ambitious project to bring the classic TCG to the Ga
 - [ ] Booster packs
 - [ ] NPC battle AI
 - [ ] Link trading & battling
+- [ ] e-Reader support
 ---
 ## Compiling
 ### Requirements
-- [Butano](https://github.com/GValiente/butano)
 - [devkitPro/devkitARM](https://devkitpro.org)
+- [Butano](https://github.com/GValiente/butano)
 - Python 3.10+
-1. Clone the Butano repository:
-```bash
-git clone https://github.com/GValiente/butano.git
-```
-2. Clone this repository:
+1. Clone this repository:
 ```bash
 git clone https://github.com/reeduxx/pokemon-tcg-advance.git
 cd pokemon-tcg-advance
 ```
-3. Build the ROM:
+2. Build the ROM:
 ```bash
 make
 ```
-4. Play!
+3. Play!
 
 ## License & Credits
 Developed by reeduxx.

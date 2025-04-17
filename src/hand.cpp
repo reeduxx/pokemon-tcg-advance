@@ -10,41 +10,30 @@ void Hand::add_card(BattleCard card) {
 		return;
 	}
 	
+	/*
 	int index = m_cards.size() - 1;
 	bn::fixed_point pos(-75 + index * 25, m_is_opponent ? -60 : 60);
+	*/
 
 	if(m_is_opponent) card.is_face_down = true;
 
-	bn::sprite_ptr sprite = SpriteFactory::create_sprite(card, pos, m_is_opponent);
+	bn::sprite_ptr sprite = SpriteFactory::create_sprite(card, bn::fixed_point(0, 0), m_is_opponent);
 	sprite.set_z_order(1);
 	m_cards.push_back(card);
 	m_sprites.push_back(sprite);
-	m_pos.push_back(pos);
+	m_pos.push_back(sprite.position());
 }
 
 void Hand::update() {
 	int count = m_cards.size();
 	
-	if(count == 0) {
+	if(count == 0 || m_cards.size() != m_sprites.size()) {
 		return;
 	}
 	
-	if(m_cards.size() != m_sprites.size() || m_cards.size() != m_pos.size()) {
-		return;
-	}
-	
-	int buffer;
-	
-	switch(m_cards.size()) {
-		case 10:
-			buffer = 1;
-			break;
-		case 9:
-			buffer = 2;
-			break;
-		default:
-			buffer = 3;
-	}
+	int buffer = 3;
+	if(count == 10) buffer = 1;
+	else if(count == 9) buffer = 2;
 	
 	int card_visual_width = 22 + buffer;
 	int total_width = card_visual_width * count;
@@ -53,8 +42,9 @@ void Hand::update() {
 	for(int i = 0; i < count; i++) {
 		int x = start_x + i * card_visual_width;
 		int y = m_is_opponent ? -61 : 37;
-		m_pos[i] = bn::fixed_point(x, y);
-		m_sprites[i].set_position(m_pos[i]);
+		bn::fixed_point pos(x, y);
+		m_pos[i] = pos;
+		m_sprites[i].set_position(pos);
 	}
 }
 

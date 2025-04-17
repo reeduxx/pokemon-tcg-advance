@@ -1,21 +1,21 @@
 #include "bn_keypad.h"
-#include "battle.h"
+#include "battle_engine.h"
 #include "card_ids.h"
 #include "cards.h"
 
-Battle::Battle(Cursor& cursor) : m_cursor(cursor) {
+BattleEngine::BattleEngine(Cursor& cursor, Hand& player_hand, Hand& opponent_hand, Field& field) : m_cursor(cursor), m_player_hand(player_hand), m_opponent_hand(opponent_hand), m_field(field) {
 	init_decks();
 	m_state = BattleState::COIN_FLIP;
 }
 
-void Battle::init_decks() {
+void BattleEngine::init_decks() {
 	load_deck_id(DeckId::DECK_OVERGROWTH, m_player_deck);
 	load_deck_id(DeckId::DECK_ZAP, m_opponent_deck);
 	shuffle_deck(m_player_deck);
 	shuffle_deck(m_opponent_deck);
 }
 
-void Battle::draw_starting_hands() {
+void BattleEngine::draw_starting_hands() {
 	for(int i = 0; i < 7; i++) {
 		draw_card(m_player_deck, m_player_hand);
 		draw_card(m_opponent_deck, m_opponent_hand);
@@ -24,7 +24,7 @@ void Battle::draw_starting_hands() {
 	m_opponent_hand.set_visible(false);
 }
 
-void Battle::update() {
+void BattleEngine::update() {
 	switch(m_state) {
 		case BattleState::COIN_FLIP:
 			task_coin_flip();
@@ -54,38 +54,34 @@ void Battle::update() {
 			task_check_win_conditions();
 			break;
 	}
-	
-	m_field.update();
-	m_player_hand.update();
-	m_opponent_hand.update();
 }
 
-void Battle::task_coin_flip() {
+void BattleEngine::task_coin_flip() {
 	if(!m_coin_flipping) {
-		m_flipper.start_flip();
+		m_coin_flipper.start_flip();
 		m_coin_flipping = true;
 	}
 	
-	if(m_flipper.done()) {
-		m_turn_player = (m_flipper.result() == CoinResult::HEADS) ? TurnPlayer::PLAYER : TurnPlayer::OPPONENT;
+	if(m_coin_flipper.done()) {
+		m_turn_player = (m_coin_flipper.result() == CoinResult::HEADS) ? TurnPlayer::PLAYER : TurnPlayer::OPPONENT;
 		
 		if(bn::keypad::a_pressed()) {
-			m_flipper.destroy();
+			m_coin_flipper.destroy();
 			m_state = BattleState::SETUP_HANDS;
 		}
 	} else {
-		m_flipper.update();
+		m_coin_flipper.update();
 	}
 }
 
-void Battle::task_setup_hands() {
+void BattleEngine::task_setup_hands() {
 	draw_starting_hands();
 	// TODO: Implement mulligans
 	m_field.scroll_to_player();
 	m_state = BattleState::SETUP_ACTIVE;
 }
 
-void Battle::task_setup_active() {
+void BattleEngine::task_setup_active() {
 	if(bn::keypad::a_pressed()) {
 		int i = m_cursor.hand_idx();
 
@@ -102,7 +98,7 @@ void Battle::task_setup_active() {
 	}
 }
 
-void Battle::task_setup_bench() {
+void BattleEngine::task_setup_bench() {
 	static int bench_i = 0;
 
 	if(bn::keypad::a_pressed()) {
@@ -127,33 +123,33 @@ void Battle::task_setup_bench() {
 	}
 }
 
-void Battle::task_setup_prizes() {
+void BattleEngine::task_setup_prizes() {
 	// TODO: Implement prize cards
 	m_state = BattleState::BATTLE_START;
 }
 
-void Battle::task_start_turn() {
+void BattleEngine::task_start_turn() {
 	reset_phase();
 	m_state = (m_turn_player == TurnPlayer::PLAYER) ? BattleState::PLAYER_TURN : BattleState::OPPONENT_TURN;
 }
 
-void Battle::task_player_turn() {
+void BattleEngine::task_player_turn() {
 	update_phase();
 	if(is_phase(TurnPhase::END))
 		m_state = BattleState::OPPONENT_TURN;
 }
 
-void Battle::task_opponent_turn() {
+void BattleEngine::task_opponent_turn() {
 	update_phase();
 	if(is_phase(TurnPhase::END))
 		m_state = BattleState::PLAYER_TURN;
 }
 
-void Battle::task_check_win_conditions() {
+void BattleEngine::task_check_win_conditions() {
 	// TODO: Implement win conditions
 }
 
-void Battle::update_phase() {
+void BattleEngine::update_phase() {
 	switch(m_phase) {
 		case TurnPhase::DRAW:
 			switch(m_turn_player) {
@@ -187,63 +183,63 @@ void Battle::update_phase() {
 	}
 }
 
-Field& Battle::field() {
+Field& BattleEngine::field() {
 	return m_field;
 }
 
-const Field& Battle::field() const {
+const Field& BattleEngine::field() const {
 	return m_field;
 }
 
-TurnPlayer Battle::current_turn() const {
+TurnPlayer BattleEngine::current_turn() const {
 	return m_turn_player;
 }
 
-bool Battle::is_player_turn() const {
+bool BattleEngine::is_player_turn() const {
 	return m_turn_player == TurnPlayer::PLAYER;
 }
 
-bool Battle::is_opponent_turn() const {
+bool BattleEngine::is_opponent_turn() const {
 	return m_turn_player == TurnPlayer::OPPONENT;
 }
 
-TurnPhase Battle::current_phase() const {
+TurnPhase BattleEngine::current_phase() const {
 	return m_phase;
 }
 
-void Battle::reset_phase() {
+void BattleEngine::reset_phase() {
 	m_phase = TurnPhase::DRAW;
 }
 
-bool Battle::is_phase(TurnPhase phase) const {
+bool BattleEngine::is_phase(TurnPhase phase) const {
 	return m_phase == phase;
 }
 
-void Battle::try_draw_card_player() {
+void BattleEngine::try_draw_card_player() {
 	if(!m_player_deck.empty() && m_player_hand.card_count() < 10) {
 		draw_card(m_player_deck, m_player_hand);
 	}
 }
 
-void Battle::try_draw_card_opponent() {
+void BattleEngine::try_draw_card_opponent() {
 	if(!m_opponent_deck.empty() && m_opponent_hand.card_count() < 10) {
 		draw_card(m_opponent_deck, m_opponent_hand);
 	}
 }
 
-Hand Battle::player_hand() const {
+Hand BattleEngine::player_hand() const {
 	return m_player_hand;
 }
 
-Hand Battle::opponent_hand() const {
+Hand BattleEngine::opponent_hand() const {
 	return m_opponent_hand;
 }
 
-BattleState Battle::current_state() const {
+BattleState BattleEngine::current_state() const {
 	return m_state;
 }
 
-bool Battle::is_basic_pokemon(const BattleCard& card) const {
+bool BattleEngine::is_basic_pokemon(const BattleCard& card) const {
 	const Card* data = get_card_by_id(card.card_id);
 	return data && data->header.type == CardType::CARD_POKEMON && (data->pokemon.stage == 0 || data->pokemon.stage == 1);
 }

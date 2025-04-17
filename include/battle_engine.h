@@ -1,5 +1,5 @@
-#ifndef GUARD_BATTLE_H
-#define GUARD_BATTLE_H
+#ifndef GUARD_BATTLE_ENGINE_H
+#define GUARD_BATTLE_ENGINE_H
 
 #include "coin_flipper.h"
 #include "cursor.h"
@@ -31,21 +31,21 @@ enum class TurnPhase {
 	END
 };
 
-class Battle {
+class BattleEngine {
 	private:
+		BattleState m_state;
+		CoinFlipper m_coin_flipper;
 		Cursor& m_cursor;
 		Deck m_player_deck;
 		Deck m_opponent_deck;
-		CoinFlipper m_flipper;
-		bool m_coin_flipping = false;
-		Hand m_player_hand{false};
-		Hand m_opponent_hand{true};
-		Field m_field;
-		TurnPlayer m_turn_player;
-		BattleState m_state;
+		Field& m_field;
+		Hand& m_player_hand;
+		Hand& m_opponent_hand;
 		TurnPhase m_phase;
+		TurnPlayer m_turn_player;
+		bool m_coin_flipping = false;
 	public:
-		Battle(Cursor& cursor);
+		BattleEngine(Cursor& cursor, Hand& player_hand, Hand& opponent_hand, Field& field);
 		void update();
 		Field& field();
 		const Field& field() const;

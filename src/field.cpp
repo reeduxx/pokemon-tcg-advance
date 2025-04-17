@@ -1,10 +1,8 @@
 #include "bn_regular_bg_items_field.h"
-#include "bn_regular_bg_items_name_bar.h"
 #include "field.h"
 #include "sprite_factory.h"
 
 Field::Field() : m_bg(bn::regular_bg_items::field.create_bg(0, -176)), m_scroll_curr(0, -176), m_scroll_target(0, -176) {
-	m_name_bar = bn::regular_bg_items::name_bar.create_bg(0, -48);
 	initialize_zones();
 }
 
