@@ -2,6 +2,7 @@
 #define CARD_H
 
 #include <cstdint>
+#include "card_name_ids.h"
 
 enum class CardType : uint8_t {
 	CARD_POKEMON,
@@ -80,7 +81,7 @@ enum class TrainerSubtype : uint8_t {
 struct CardHeader {
 	uint16_t id;
 	CardType type;
-	uint8_t name_id;
+	CardName name_id;
 	Set set;
 	uint8_t set_number;
 	Rarity rarity;

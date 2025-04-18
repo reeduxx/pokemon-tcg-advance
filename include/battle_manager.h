@@ -28,6 +28,8 @@ class BattleManager {
     public:
         BattleManager();
         void update();
+        void draw_hands();
+        void try_draw_card(TurnPlayer turn_player);
     private:
         void update_input();
         void update_visuals();

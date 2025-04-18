@@ -10,7 +10,7 @@ void CardNameBar::set_text(const bn::string<32>& text) {
     if(text != m_text) {
         m_text = text;
         m_text_sprites.clear();
-        m_text_generator.generate(-108, 72, m_text, m_text_sprites);
+        m_text_generator.generate(-112, 68, m_text, m_text_sprites);
     }
 }
 

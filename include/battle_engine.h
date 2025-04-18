@@ -38,9 +38,8 @@ class BattleEngine {
 		Cursor& m_cursor;
 		Deck m_player_deck;
 		Deck m_opponent_deck;
+		Hand& m_player_hand, & m_opponent_hand;
 		Field& m_field;
-		Hand& m_player_hand;
-		Hand& m_opponent_hand;
 		TurnPhase m_phase;
 		TurnPlayer m_turn_player;
 		bool m_coin_flipping = false;
@@ -55,14 +54,14 @@ class BattleEngine {
 		TurnPhase current_phase() const;
 		void reset_phase();
 		bool is_phase(TurnPhase phase) const;
-		void try_draw_card_player();
-		void try_draw_card_opponent();
 		Hand player_hand() const;
 		Hand opponent_hand() const;
 		BattleState current_state() const;
+		bool can_draw(TurnPlayer turn_player) const;
+		BattleCard draw_card(TurnPlayer turn_player);
+		void draw_turn_card();
 	private:
 		void init_decks();
-		void draw_starting_hands();
 		void task_coin_flip();
 		void task_setup_hands();
 		void task_setup_active();

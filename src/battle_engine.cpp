@@ -15,14 +15,6 @@ void BattleEngine::init_decks() {
 	shuffle_deck(m_opponent_deck);
 }
 
-void BattleEngine::draw_starting_hands() {
-	for(int i = 0; i < 7; i++) {
-		draw_card(m_player_deck, m_player_hand);
-		draw_card(m_opponent_deck, m_opponent_hand);
-	}
-	
-	m_opponent_hand.set_visible(false);
-}
 
 void BattleEngine::update() {
 	switch(m_state) {
@@ -53,6 +45,8 @@ void BattleEngine::update() {
 		case BattleState::CHECK_WIN:
 			task_check_win_conditions();
 			break;
+		default:
+			break;
 	}
 }
 
@@ -75,7 +69,6 @@ void BattleEngine::task_coin_flip() {
 }
 
 void BattleEngine::task_setup_hands() {
-	draw_starting_hands();
 	// TODO: Implement mulligans
 	m_field.scroll_to_player();
 	m_state = BattleState::SETUP_ACTIVE;
@@ -157,16 +150,17 @@ void BattleEngine::update_phase() {
 					m_opponent_hand.set_visible(false);
 					m_field.scroll_to_player();
 					m_player_hand.set_visible(true);
-					try_draw_card_player();
 					break;
 				case TurnPlayer::OPPONENT:
 					m_player_hand.set_visible(false);
 					m_field.scroll_to_opponent();
 					m_opponent_hand.set_visible(true);
-					try_draw_card_opponent();
+					break;
+				default:
 					break;
 			}
 			
+			draw_turn_card();
 			m_phase = TurnPhase::MAIN;
 			break;
 		case TurnPhase::MAIN:
@@ -179,6 +173,8 @@ void BattleEngine::update_phase() {
 		case TurnPhase::END:
 			reset_phase();
 			m_turn_player = (m_turn_player == TurnPlayer::PLAYER) ? TurnPlayer::OPPONENT : TurnPlayer::PLAYER;
+			break;
+		default:
 			break;
 	}
 }
@@ -215,18 +211,6 @@ bool BattleEngine::is_phase(TurnPhase phase) const {
 	return m_phase == phase;
 }
 
-void BattleEngine::try_draw_card_player() {
-	if(!m_player_deck.empty() && m_player_hand.card_count() < 10) {
-		draw_card(m_player_deck, m_player_hand);
-	}
-}
-
-void BattleEngine::try_draw_card_opponent() {
-	if(!m_opponent_deck.empty() && m_opponent_hand.card_count() < 10) {
-		draw_card(m_opponent_deck, m_opponent_hand);
-	}
-}
-
 Hand BattleEngine::player_hand() const {
 	return m_player_hand;
 }
@@ -242,4 +226,44 @@ BattleState BattleEngine::current_state() const {
 bool BattleEngine::is_basic_pokemon(const BattleCard& card) const {
 	const Card* data = get_card_by_id(card.card_id);
 	return data && data->header.type == CardType::CARD_POKEMON && (data->pokemon.stage == 0 || data->pokemon.stage == 1);
+}
+
+bool BattleEngine::can_draw(TurnPlayer turn_player) const {
+	switch(turn_player) {
+		case TurnPlayer::PLAYER:
+			return !m_player_deck.empty() && m_player_hand.card_count() < 10;
+		case TurnPlayer::OPPONENT:
+			return !m_opponent_deck.empty() && m_opponent_hand.card_count() < 10;
+		default:
+			return false;
+	}
+}
+
+BattleCard BattleEngine::draw_card(TurnPlayer turn_player) {
+	switch(turn_player) {
+		case TurnPlayer::PLAYER: {
+			BattleCard card = m_player_deck.back();
+			m_player_deck.pop_back();
+			return card;
+		}
+		case TurnPlayer::OPPONENT: {
+			BattleCard card = m_opponent_deck.back();
+			m_opponent_deck.pop_back();
+			return card;
+		}
+		default:
+			return BattleCard();
+	}
+}
+
+void BattleEngine::draw_turn_card() {
+	if(can_draw(m_turn_player)) {
+		BattleCard card = draw_card(m_turn_player);
+
+		if(is_player_turn()) {
+			m_player_hand.add_card(card);
+		} else {
+			m_opponent_hand.add_card(card);
+		}
+	}
 }

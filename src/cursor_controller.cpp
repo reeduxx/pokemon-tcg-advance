@@ -30,6 +30,10 @@ void CursorController::update() {
 				int i = m_cursor.hand_idx() - 1;
 				m_cursor.set_hand_idx(i);
 				m_cursor.set_pos(m_battle_engine.player_hand().get_card_pos(i));
+			} else {
+				int i = m_battle_engine.player_hand().card_count() - 1;
+				m_cursor.set_hand_idx(i);
+				m_cursor.set_pos(m_battle_engine.player_hand().get_card_pos(i));
 			}
 		} else if(zone >= ZoneId::PLAYER_BENCH_1 && zone <= ZoneId::PLAYER_BENCH_5) {
 			snap_to_zone(zone == ZoneId::PLAYER_BENCH_1 ? ZoneId::PLAYER_BENCH_5 : static_cast<ZoneId>(static_cast<int>(zone) - 1));
@@ -46,6 +50,9 @@ void CursorController::update() {
 				int i = m_cursor.hand_idx() + 1;
 				m_cursor.set_hand_idx(i);
 				m_cursor.set_pos(m_battle_engine.player_hand().get_card_pos(i));
+			} else {
+				m_cursor.set_hand_idx(0);
+				m_cursor.set_pos(m_battle_engine.player_hand().get_card_pos(0));
 			}
 		} else if(zone >= ZoneId::PLAYER_BENCH_1 && zone <= ZoneId::PLAYER_BENCH_5) {
 			snap_to_zone(zone == ZoneId::PLAYER_BENCH_5 ? ZoneId::PLAYER_BENCH_1 : static_cast<ZoneId>(static_cast<int>(zone) + 1));
