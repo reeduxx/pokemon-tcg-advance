@@ -3,7 +3,7 @@
 #include "card_ids.h"
 #include "cards.h"
 
-BattleEngine::BattleEngine(Cursor& cursor, Hand& player_hand, Hand& opponent_hand, Field& field) : m_cursor(cursor), m_player_hand(player_hand), m_opponent_hand(opponent_hand), m_field(field) {
+BattleEngine::BattleEngine(BattleCursor& cursor, Hand& player_hand, Hand& opponent_hand, Field& field) : m_cursor(cursor), m_player_hand(player_hand), m_opponent_hand(opponent_hand), m_field(field) {
 	init_decks();
 	m_state = BattleState::COIN_FLIP;
 }
@@ -21,8 +21,17 @@ void BattleEngine::update() {
 		case BattleState::COIN_FLIP:
 			task_coin_flip();
 			return;
-		case BattleState::SETUP_HANDS:
-			task_setup_hands();
+		case BattleState::DRAW_HANDS:
+			task_draw_hands();
+			break;
+		case BattleState::MULLIGAN:
+			task_mulligan();
+			break;
+		case BattleState::MULLIGAN_PLAYER_DRAW:
+			task_mulligan_player_draw();
+			break;
+		case BattleState::MULLIGAN_OPPONENT_DRAW:
+			task_mulligan_opponent_draw();
 			break;
 		case BattleState::SETUP_ACTIVE:
 			task_setup_active();
@@ -61,16 +70,70 @@ void BattleEngine::task_coin_flip() {
 		
 		if(bn::keypad::a_pressed()) {
 			m_coin_flipper.destroy();
-			m_state = BattleState::SETUP_HANDS;
+			m_state = BattleState::DRAW_HANDS;
 		}
 	} else {
 		m_coin_flipper.update();
 	}
 }
 
-void BattleEngine::task_setup_hands() {
-	// TODO: Implement mulligans
-	m_field.scroll_to_player();
+void BattleEngine::task_draw_hands() {
+	draw_hand(TurnPlayer::PLAYER);
+	draw_hand(TurnPlayer::OPPONENT);
+
+	if(has_basic(m_player_hand) && has_basic(m_opponent_hand)) {
+		m_field.scroll_to_player();
+		m_state = BattleState::SETUP_ACTIVE;
+	} else {
+		m_state = BattleState::MULLIGAN;
+	}
+}
+
+void BattleEngine::task_mulligan() {
+	if(!has_basic(m_player_hand)) {
+		++m_player_mulligans;
+		m_field.scroll_to_player();
+		m_player_hand.set_visible(true);
+		m_player_hand.shuffle(m_player_deck);
+		draw_hand(TurnPlayer::PLAYER);
+	}
+
+	if(!has_basic(m_opponent_hand)) {
+		++m_opponent_mulligans;
+		m_field.scroll_to_opponent();
+		m_opponent_hand.set_visible(true);
+		m_opponent_hand.shuffle(m_opponent_deck);
+		draw_hand(TurnPlayer::OPPONENT);
+	}
+
+	if(has_basic(m_player_hand) && has_basic(m_opponent_hand)) {
+		if(m_opponent_mulligans > m_player_mulligans) {
+			m_state = BattleState::MULLIGAN_PLAYER_DRAW;
+		} else if(m_player_mulligans > m_opponent_mulligans) {
+			m_state = BattleState::MULLIGAN_OPPONENT_DRAW;
+		} else {
+			m_state = BattleState::SETUP_ACTIVE;
+		}
+	}
+}
+
+void BattleEngine::task_mulligan_player_draw() {
+	for(int i = 0; i < m_opponent_mulligans - m_player_mulligans; ++i) {
+		if(can_draw(TurnPlayer::PLAYER)) {
+			m_player_hand.add_card(draw_card(TurnPlayer::PLAYER));
+		}
+	}
+
+	m_state = BattleState::SETUP_ACTIVE;
+}
+
+void BattleEngine::task_mulligan_opponent_draw() {
+	for(int i = 0; i < m_player_mulligans - m_opponent_mulligans; ++i) {
+		if(can_draw(TurnPlayer::OPPONENT)) {
+			m_opponent_hand.add_card(draw_card(TurnPlayer::OPPONENT));
+		}
+	}
+
 	m_state = BattleState::SETUP_ACTIVE;
 }
 
@@ -160,7 +223,7 @@ void BattleEngine::update_phase() {
 					break;
 			}
 			
-			draw_turn_card();
+			try_draw_card(m_turn_player);
 			m_phase = TurnPhase::MAIN;
 			break;
 		case TurnPhase::MAIN:
@@ -256,14 +319,48 @@ BattleCard BattleEngine::draw_card(TurnPlayer turn_player) {
 	}
 }
 
-void BattleEngine::draw_turn_card() {
-	if(can_draw(m_turn_player)) {
-		BattleCard card = draw_card(m_turn_player);
-
-		if(is_player_turn()) {
-			m_player_hand.add_card(card);
-		} else {
-			m_opponent_hand.add_card(card);
+bool BattleEngine::has_basic(const Hand& hand) const {
+	for(int i = 0; i < hand.card_count(); i++) {
+		if(is_basic_pokemon(hand.get_card(i))) {
+			return true;
 		}
 	}
+
+	return false;
+}
+
+void BattleEngine::draw_hand(TurnPlayer turn_player) {
+	for(int i = 0; i < 7; ++i) {
+		try_draw_card(turn_player);
+	}
+
+	if(turn_player == TurnPlayer::OPPONENT) {
+		m_opponent_hand.set_visible(false);
+	}
+}
+
+void BattleEngine::try_draw_card(TurnPlayer turn_player) {
+	switch(turn_player) {
+		case TurnPlayer::PLAYER:
+			if(can_draw(turn_player)) {
+				m_player_hand.add_card(draw_card(turn_player));
+			}
+			break;
+		case TurnPlayer::OPPONENT:
+			if(can_draw(turn_player)) {
+				m_opponent_hand.add_card(draw_card(turn_player));
+			}
+			break;
+		default:
+			break;
+	}
+}
+
+bool BattleEngine::can_evolve(const BattleCard& from, const BattleCard& to) const {
+	const Card* from_data = get_card_by_id(from.card_id);
+	const Card* to_data = get_card_by_id(to.card_id);
+
+	if(!from_data || !to_data) return false;
+
+	return to_data->header.type == CardType::CARD_POKEMON && from_data->header.name_id == to_data->pokemon.evolution_from && from_data->pokemon.stage + 1 == to_data->pokemon.stage;
 }

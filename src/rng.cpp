@@ -7,6 +7,10 @@ RNG& RNG::instance() {
     return instance;
 }
 
+void RNG::update() {
+    _rand.update();
+}
+
 void RNG::seed(uint32_t seed) {
     _rand.set_seed(seed);
 }

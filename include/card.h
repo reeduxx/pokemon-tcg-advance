@@ -89,7 +89,7 @@ struct CardHeader {
 
 struct PokemonData {
 	uint8_t stage;
-	uint8_t evolution_from;
+	CardName evolution_from;
 	Type primary_type;
 	Type secondary_type;
 	uint8_t hp;

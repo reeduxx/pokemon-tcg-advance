@@ -1,5 +1,6 @@
 #include "battle_card.h"
 #include "deck.h"
+#include "hand.h"
 #include "rng.h"
 
 void shuffle_deck(Deck& deck) {

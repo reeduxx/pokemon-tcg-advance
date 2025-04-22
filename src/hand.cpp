@@ -80,3 +80,18 @@ void Hand::set_visible(bool visible) {
 		m_sprites[i].set_visible(visible);
 	}
 }
+
+void Hand::shuffle(Deck& deck) {
+	while(!m_cards.empty()) {
+		BattleCard card = m_cards.back();
+		m_cards.pop_back();
+		deck.push_back(card);
+	}
+
+	for(auto& sprite : m_sprites) {
+		sprite.set_visible(false);
+	}
+
+	m_sprites.clear();
+	m_pos.clear();
+}

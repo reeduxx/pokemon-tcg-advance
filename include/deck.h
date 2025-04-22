@@ -7,7 +7,7 @@ constexpr int MAX_DECK_SIZE = 60;
 #include "battle_card.h"
 #include "card.h"
 #include "decks.h"
-#include "hand.h"
+class Hand;
 
 struct CardInstance {
 	uint16_t card_id;

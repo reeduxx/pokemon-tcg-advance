@@ -1,33 +1,84 @@
+#include "bn_keypad.h"
+#include "bn_log.h"
 #include "bn_regular_bg_items_card_name_bar.h"
+#include "bn_regular_bg_tiles_items_border_test.h"
 #include "common_fixed_8x16_sprite_font.h"
 #include "battle_manager.h"
 #include "card_names.h"
 #include "cards.h"
 
+
 BattleManager::BattleManager() : 
-    m_battle_cursor(), m_player_hand(false), m_opponent_hand(true), m_field(), m_battle_engine(m_battle_cursor, m_player_hand, 
-    m_opponent_hand, m_field), m_battle_cursor_controller(m_battle_cursor, m_battle_engine), 
-    m_text_generator(common::fixed_8x16_sprite_font), m_card_name_bar(bn::regular_bg_items::card_name_bar, m_text_generator) {
+    m_battle_cursor(), m_menu_cursor(), m_player_hand(false), m_opponent_hand(true), m_field(), 
+    m_battle_engine(m_battle_cursor, m_player_hand, m_opponent_hand, m_field), 
+    m_battle_cursor_controller(m_battle_cursor, m_battle_engine),
+    m_text_generator(common::fixed_8x16_sprite_font), m_card_name_bar(bn::regular_bg_items::card_name_bar, m_text_generator), 
+    m_menu(27, 13, 4, 4, bn::regular_bg_tiles_items::border_test, bn::regular_bg_tiles_items::border_test_palette, m_text_generator), 
+    m_menu_cursor_controller(m_menu_cursor, m_menu) {
     m_battle_cursor.set_hand_idx(0);
+    m_menu_cursor.set_visible(false);
+    m_menu.hide();
 }
 
 void BattleManager::update() {
-    if(m_battle_engine.current_state() == BattleState::SETUP_HANDS) {
-        draw_hands();
-    }
-
     m_battle_engine.update();
     update_input();
     update_visuals();
 }
 
 void BattleManager::update_input() {
-    if(m_mode == InputMode::BATTLE) m_battle_cursor_controller.update();
-    // TODO: Implement menus and menu cursor/cursor controller
-    //if(m_mode == InputMode::MENU) m_menu_cursor_controller.update();
+    BN_LOG(static_cast<int>(m_mode));
+    if(m_mode == InputMode::BATTLE) {
+        m_battle_cursor_controller.update();
+
+        if(m_battle_engine.current_state() > BattleState::BATTLE_START) {
+            if(bn::keypad::a_pressed()) {
+                if(m_battle_cursor.mode() == CursorMode::HAND) {
+                    int i = m_battle_cursor.hand_idx();
+                    const BattleCard& card = m_player_hand.get_card(i);
+                    show_card_menu(card);
+                    return;
+                } else if(m_battle_cursor.mode() == CursorMode::FIELD) {
+                    ZoneId zone_id = m_battle_cursor.zone();
+                    const Zone& zone_data = m_field.get_zone(zone_id);
+
+                    if(zone_data.occupied) {
+                        const BattleCard& card = zone_data.card;
+                        show_card_menu(card);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    
+    if(m_mode == InputMode::MENU) {
+        m_menu_cursor_controller.update();
+
+        if(bn::keypad::a_pressed()) {
+            int i = m_menu_cursor.idx();
+            // execute_menu_action(i);
+            m_menu.hide();
+            m_menu_cursor.set_visible(false);
+            m_mode = InputMode::BATTLE;
+        }
+
+        if(bn::keypad::b_pressed()) {
+            m_menu.hide();
+            m_menu_cursor.set_visible(false);
+            m_mode = InputMode::BATTLE;
+        }
+    }
 }
 
 void BattleManager::update_visuals() {
+    if(m_battle_engine.current_state() == BattleState::COIN_FLIP || m_battle_engine.current_state() == BattleState::OPPONENT_TURN) {
+        m_battle_cursor.set_visible(false);
+    } else {
+        m_battle_cursor.set_visible(true);
+    }
+    
+    m_battle_cursor.update();
     m_field.update();
     m_player_hand.update();
     m_opponent_hand.update();
@@ -60,33 +111,30 @@ void BattleManager::update_visuals() {
     }
 }
 
-void BattleManager::draw_hands() {
-    for(int i = 0; i < 7; ++i) {
-        if(m_battle_engine.can_draw(TurnPlayer::PLAYER)) {
-            m_player_hand.add_card(m_battle_engine.draw_card(TurnPlayer::PLAYER));
-        }
+void BattleManager::show_card_menu(const BattleCard& card) {
+    bn::array<bn::string<24>, 4> options;
+    int count = 0;
+    const Card* data = get_card_by_id(card.card_id);
 
-        if(m_battle_engine.can_draw(TurnPlayer::OPPONENT)) {
-            m_opponent_hand.add_card(m_battle_engine.draw_card(TurnPlayer::OPPONENT));
-        }
+    if(!data) {
+        return;
     }
 
-    m_opponent_hand.set_visible(false);
-}
-
-void BattleManager::try_draw_card(TurnPlayer turn_player) {
-    switch(turn_player) {
-        case TurnPlayer::PLAYER:
-            if(m_battle_engine.can_draw(TurnPlayer::PLAYER)) {
-                m_player_hand.add_card(m_battle_engine.draw_card(TurnPlayer::PLAYER));
-            }
-            break;
-        case TurnPlayer::OPPONENT:
-            if(m_battle_engine.can_draw(TurnPlayer::OPPONENT)) {
-                m_opponent_hand.add_card(m_battle_engine.draw_card(TurnPlayer::OPPONENT));
-            }
-            break;
-        default:
-            break;
+    if(data->header.type == CardType::CARD_POKEMON) {
+        options[count++] = "EVOLVE";
+        options[count++] = "VIEW";
+    } else if(data->header.type == CardType::CARD_TRAINER) {
+        options[count++] = "PLAY";
+    } else if(data->header.type == CardType::CARD_ENERGY) {
+        options[count++] = "ATTACH";
     }
+
+    options[count++] = "CANCEL";
+    m_menu.set_options(bn::span(options.begin(), count));
+    m_menu.show();
+    m_menu.draw_text();
+    m_menu_cursor.set_visible(true);
+    m_menu_cursor.set_idx(0);
+    m_menu_cursor.set_pos(m_menu.option_pos(0));
+    m_mode = InputMode::MENU;
 }

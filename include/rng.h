@@ -8,8 +8,9 @@ class RNG {
     private:
         RNG();
         bn::seed_random _rand;
-    public: 
+    public:
         static RNG& instance();
+        void update();
         void seed(uint32_t seed);
         int get_int(int max);
         int get_int(int min, int max);

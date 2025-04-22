@@ -2,19 +2,28 @@
 #define GUARD_BATTLE_ENGINE_H
 
 #include "coin_flipper.h"
-#include "cursor.h"
+#include "battle_cursor.h"
 #include "deck.h"
 #include "field.h"
 #include "hand.h"
 
+/**
+ * @brief Enum representing whose turn it is.
+ */
 enum TurnPlayer {
 	PLAYER,
 	OPPONENT
 };
 
+/**
+ * @brief Enum representing the state of the battle.
+ */
 enum class BattleState {
 	COIN_FLIP,
-	SETUP_HANDS,
+	DRAW_HANDS,
+	MULLIGAN,
+	MULLIGAN_PLAYER_DRAW,
+	MULLIGAN_OPPONENT_DRAW,
 	SETUP_ACTIVE,
 	SETUP_BENCH,
 	SETUP_PRIZES,
@@ -24,6 +33,9 @@ enum class BattleState {
 	CHECK_WIN
 };
 
+/**
+ * @brief Enum representing the phase of the turn.
+ */
 enum class TurnPhase {
 	DRAW,
 	MAIN,
@@ -35,7 +47,7 @@ class BattleEngine {
 	private:
 		BattleState m_state;
 		CoinFlipper m_coin_flipper;
-		Cursor& m_cursor;
+		BattleCursor& m_cursor;
 		Deck m_player_deck;
 		Deck m_opponent_deck;
 		Hand& m_player_hand, & m_opponent_hand;
@@ -43,8 +55,9 @@ class BattleEngine {
 		TurnPhase m_phase;
 		TurnPlayer m_turn_player;
 		bool m_coin_flipping = false;
+		int m_player_mulligans = 0, m_opponent_mulligans = 0;
 	public:
-		BattleEngine(Cursor& cursor, Hand& player_hand, Hand& opponent_hand, Field& field);
+		BattleEngine(BattleCursor& cursor, Hand& player_hand, Hand& opponent_hand, Field& field);
 		void update();
 		Field& field();
 		const Field& field() const;
@@ -59,11 +72,16 @@ class BattleEngine {
 		BattleState current_state() const;
 		bool can_draw(TurnPlayer turn_player) const;
 		BattleCard draw_card(TurnPlayer turn_player);
-		void draw_turn_card();
+		void draw_hand(TurnPlayer turn_player);
+		void try_draw_card(TurnPlayer turn_player);
+		bool can_evolve(const BattleCard& from, const BattleCard& to) const;
 	private:
 		void init_decks();
 		void task_coin_flip();
-		void task_setup_hands();
+		void task_draw_hands();
+		void task_mulligan();
+		void task_mulligan_player_draw();
+		void task_mulligan_opponent_draw();
 		void task_setup_active();
 		void task_setup_bench();
 		void task_setup_prizes();
@@ -73,6 +91,7 @@ class BattleEngine {
 		void task_check_win_conditions();
 		void update_phase();
 		bool is_basic_pokemon(const BattleCard& card) const;
+		bool has_basic(const Hand& hand) const;
 };
 
 #endif // GUARD_BATTLE_H

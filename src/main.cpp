@@ -17,6 +17,7 @@ int main() {
 	
     while(true) {
 		battle_manager.update();
+		RNG::instance().update();
         bn::core::update();
     }
 }
