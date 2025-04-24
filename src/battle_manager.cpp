@@ -1,18 +1,18 @@
 #include "bn_keypad.h"
 #include "bn_log.h"
+#include "bn_sprite_font.h"
 #include "bn_regular_bg_items_card_name_bar.h"
 #include "bn_regular_bg_tiles_items_border_test.h"
-#include "common_fixed_8x16_sprite_font.h"
 #include "battle_manager.h"
 #include "card_names.h"
 #include "cards.h"
-
+#include "font.h"
 
 BattleManager::BattleManager() : 
     m_battle_cursor(), m_menu_cursor(), m_player_hand(false), m_opponent_hand(true), m_field(), 
     m_battle_engine(m_battle_cursor, m_player_hand, m_opponent_hand, m_field), 
     m_battle_cursor_controller(m_battle_cursor, m_battle_engine),
-    m_text_generator(common::fixed_8x16_sprite_font), m_card_name_bar(bn::regular_bg_items::card_name_bar, m_text_generator), 
+    m_text_generator(font::font), m_card_name_bar(bn::regular_bg_items::card_name_bar, m_text_generator), 
     m_menu(27, 13, 4, 4, bn::regular_bg_tiles_items::border_test, bn::regular_bg_tiles_items::border_test_palette, m_text_generator), 
     m_menu_cursor_controller(m_menu_cursor, m_menu) {
     m_battle_cursor.set_hand_idx(0);

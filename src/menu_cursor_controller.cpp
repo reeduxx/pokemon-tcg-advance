@@ -15,7 +15,7 @@ void MenuCursorController::update() {
     }
     // Down
     if(bn::keypad::down_pressed()) {
-        if(m_cursor.idx() < m_menu.option_count()) {
+        if(m_cursor.idx() < m_menu.option_count() - 1) {
             m_cursor.set_idx(m_cursor.idx() + 1);
             m_cursor.set_pos(m_menu.option_pos(m_cursor.idx()));
         }

@@ -27,11 +27,11 @@ class BattleManager {
         Field m_field;
         BattleEngine m_battle_engine;
         BattleCursorController m_battle_cursor_controller;
-        MenuCursorController m_menu_cursor_controller;
         bn::sprite_text_generator m_text_generator;
         CardNameBar m_card_name_bar;
-        InputMode m_mode = InputMode::BATTLE;
         Menu m_menu;
+        MenuCursorController m_menu_cursor_controller;
+        InputMode m_mode = InputMode::BATTLE;
     public:
         BattleManager();
         void update();

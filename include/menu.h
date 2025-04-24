@@ -20,12 +20,12 @@ class Menu {
         static constexpr int map_cols = 32;
         static constexpr int map_rows = 32;
         bn::regular_bg_map_cell m_cells[map_cols * map_rows];
+        bn::sprite_text_generator m_text_generator;
         bn::regular_bg_map_item m_map_item;
         bn::regular_bg_tiles_item m_tiles_item;
         bn::optional<bn::regular_bg_map_ptr> m_bg_map_ptr;
         bn::optional<bn::regular_bg_ptr> m_bg_ptr;
         bn::vector<bn::string<24>, 6> m_options;
-        bn::sprite_text_generator m_text_generator;
         bn::vector<bn::sprite_ptr, 32> m_option_text_sprites;
         int m_selected_index = 0;
         bool m_visible = false;

@@ -41,9 +41,8 @@ void Menu::set_options(const bn::span<const bn::string<24>>& options) {
         max_length = bn::max(max_length, opt.size());
     }
 
-    BN_LOG(max_length);
-    m_width = max_length + 2;
-    m_height = m_options.size() + 2;
+    m_width = max_length + 3;
+    m_height = m_options.size() * 2 + 2;
     m_x = 31 - m_width;
     m_y = 17 - m_height;
     draw_border();
@@ -119,8 +118,9 @@ void Menu::draw_text() {
     m_option_text_sprites.clear();
 
     for(int i = 0; i < m_options.size(); ++i) {
-        int x = -120 + (m_x * 8);
-        int y = -80 + (m_y + 1 + i) * 8;
+        int x = -120 + (m_x * 8) + 8;
+        // int y = -80 + (m_y + 1 + i) * 8;
+        int y = -80 + (m_y * 8) + 14 + i * 18;
         bn::string<24> text = m_options[i];
         m_text_generator.generate(x, y, text, m_option_text_sprites);
     }
@@ -131,7 +131,7 @@ int Menu::option_count() const {
 }
 
 bn::fixed_point Menu::option_pos(int i) const {
-    int x = m_x * 8 + 4;
-    int y = (m_y + 1 + i) * 8 + 48;
+    int x = -120 + (m_x * 8) + 4;
+    int y = -80 + (m_y * 8) + 14 + i * 18;
     return bn::fixed_point(x, y);
 }
