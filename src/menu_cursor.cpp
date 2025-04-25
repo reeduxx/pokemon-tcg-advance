@@ -1,11 +1,11 @@
 #include "bn_sprite_items_menu_cursor.h"
 #include "menu_cursor.h"
 
-MenuCursor::MenuCursor() : Cursor(bn::sprite_items::menu_cursor) {}
-
-void MenuCursor::update() {
-    // TODO: Implement update method
+MenuCursor::MenuCursor() : Cursor(bn::sprite_items::menu_cursor) {
+    m_sprite.set_bg_priority(0);
 }
+
+void MenuCursor::update() {}
 
 void MenuCursor::set_pos(bn::fixed_point pos) {
     m_pos = pos;

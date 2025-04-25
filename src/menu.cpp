@@ -29,6 +29,7 @@ Menu::Menu(int x, int y, int width, int height, const bn::regular_bg_tiles_item&
     m_bg_map_ptr = m_bg_ptr->map();
     draw_border();
     m_bg_ptr->set_position(0, 48);
+    m_bg_ptr->set_priority(1);
     m_bg_map_ptr->reload_cells_ref();
 }
 
@@ -124,6 +125,11 @@ void Menu::draw_text() {
         bn::string<24> text = m_options[i];
         m_text_generator.generate(x, y, text, m_option_text_sprites);
     }
+
+    for(auto& sprite : m_option_text_sprites) {
+        sprite.set_z_order(0);
+        sprite.set_bg_priority(0);
+    }
 }
 
 int Menu::option_count() const {
@@ -134,4 +140,8 @@ bn::fixed_point Menu::option_pos(int i) const {
     int x = -120 + (m_x * 8) + 4;
     int y = -80 + (m_y * 8) + 14 + i * 18;
     return bn::fixed_point(x, y);
+}
+
+const bn::string<24>& Menu::option(int i) const {
+    return m_options[i];
 }

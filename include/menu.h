@@ -37,6 +37,7 @@ class Menu {
         int option_count() const;
         bn::fixed_point option_pos(int i) const;
         void draw_text();
+        const bn::string<24>& option(int i) const;
     private:
         void draw_border();
 };

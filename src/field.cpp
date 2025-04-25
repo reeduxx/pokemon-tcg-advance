@@ -79,7 +79,7 @@ Side Field::side() const {
 void Field::place_card(ZoneId id, const BattleCard& card) {
 	Zone& zone = get_zone(id);
 
-	if(zone.occupied) {
+	if(zone.occupied || (zone.occupied && !zone.card.can_evolve)) {
 		return;
 	}
 

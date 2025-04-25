@@ -234,6 +234,26 @@ void BattleEngine::update_phase() {
 			m_phase = TurnPhase::END;
 			break;
 		case TurnPhase::END:
+			if(is_player_turn()) {
+				for(ZoneId zone_id = ZoneId::PLAYER_BENCH_1; zone_id <= ZoneId::PLAYER_ACTIVE; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
+					Zone& zone = m_field.get_zone(zone_id);
+
+					if(zone.occupied) {
+						BattleCard& card = zone.card;
+						card.can_evolve = true;
+					}
+				}
+			} else {
+				for(ZoneId zone_id = ZoneId::OPPONENT_ACTIVE; zone_id <= ZoneId::OPPONENT_BENCH_5; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
+					Zone zone = m_field.get_zone(zone_id);
+
+					if(zone.occupied) {
+						BattleCard& card = zone.card;
+						card.can_evolve = true;
+					}
+				}
+			}
+
 			reset_phase();
 			m_turn_player = (m_turn_player == TurnPlayer::PLAYER) ? TurnPlayer::OPPONENT : TurnPlayer::PLAYER;
 			break;

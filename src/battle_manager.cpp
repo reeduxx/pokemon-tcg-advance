@@ -27,7 +27,6 @@ void BattleManager::update() {
 }
 
 void BattleManager::update_input() {
-    BN_LOG(static_cast<int>(m_mode));
     if(m_mode == InputMode::BATTLE) {
         m_battle_cursor_controller.update();
 
@@ -57,7 +56,7 @@ void BattleManager::update_input() {
 
         if(bn::keypad::a_pressed()) {
             int i = m_menu_cursor.idx();
-            // execute_menu_action(i);
+            execute_menu_action(i);
             m_menu.hide();
             m_menu_cursor.set_visible(false);
             m_mode = InputMode::BATTLE;
@@ -121,14 +120,39 @@ void BattleManager::show_card_menu(const BattleCard& card) {
     }
 
     if(data->header.type == CardType::CARD_POKEMON) {
-        options[count++] = "EVOLVE";
-        options[count++] = "VIEW";
+        if(m_battle_cursor.mode() == CursorMode::HAND) {
+            if(data->pokemon.stage == 0 || data->pokemon.stage == 1) {
+                for(ZoneId zone_id = ZoneId::PLAYER_BENCH_1; zone_id <= ZoneId::PLAYER_BENCH_5; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
+                    Zone zone = m_field.get_zone(zone_id);
+    
+                    if(!zone.occupied) {
+                        options[count++] = "PLAY";
+                        break;
+                    }
+                }
+            } else if(data->pokemon.stage > 0) {
+                for(ZoneId zone_id = ZoneId::PLAYER_BENCH_1; zone_id <= ZoneId::PLAYER_ACTIVE; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
+                    Zone zone = m_field.get_zone(zone_id);
+                    
+                    if(zone.occupied) {
+                        BattleCard& from_card = zone.card;
+                        if(from_card.can_evolve && m_battle_engine.can_evolve(from_card, card)) {
+                            options[count++] = "EVOLVE";
+                            break;
+                        }
+                    }
+                }
+            }
+        } else if(m_battle_cursor.mode() == CursorMode::FIELD) {
+            options[count++] = "RETREAT";
+        }
     } else if(data->header.type == CardType::CARD_TRAINER) {
         options[count++] = "PLAY";
     } else if(data->header.type == CardType::CARD_ENERGY) {
         options[count++] = "ATTACH";
     }
 
+    options[count++] = "VIEW";
     options[count++] = "CANCEL";
     m_menu.set_options(bn::span(options.begin(), count));
     m_menu.show();
@@ -137,4 +161,34 @@ void BattleManager::show_card_menu(const BattleCard& card) {
     m_menu_cursor.set_idx(0);
     m_menu_cursor.set_pos(m_menu.option_pos(0));
     m_mode = InputMode::MENU;
+    m_selected_card = card;
+}
+
+void BattleManager::execute_menu_action(int i) {
+    const Card* data = get_card_by_id(m_selected_card.card_id);
+
+    if(!data) {
+        return;
+    }
+
+    const bn::string<24>& action = m_menu.option(i);
+
+    if(action == "ATTACH") {
+        return;
+    } else if(action == "CANCEL") {
+        return;
+    } else if(action == "EVOLVE") {
+        for(ZoneId zone_id = ZoneId::PLAYER_BENCH_1; zone_id <= ZoneId::PLAYER_ACTIVE; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
+            Zone& zone = m_field.get_zone(zone_id);
+
+            if(zone.occupied && m_battle_engine.can_evolve(zone.card, m_selected_card)) {
+                // TODO: Finish implementing evolution.
+                return;
+            }
+        }
+    } else if(action == "PLAY") {
+        return;
+    } else if(action == "VIEW") {
+        return;
+    }
 }
