@@ -6,7 +6,8 @@
 
 enum class CursorMode {
     HAND,
-    FIELD
+    FIELD,
+    TARGET
 };
 
 class BattleCursor : public Cursor {

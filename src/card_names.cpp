@@ -417,7 +417,6 @@ static const char* const card_names[] = {
 	"RAYQUAZA",
 	"JIRACHI",
 	"DEOXYS",
-	/*
 	// Dark Pokemon
 	"DARK IVYSAUR",
 	"DARK VENUSAUR",
@@ -482,6 +481,7 @@ static const char* const card_names[] = {
 	"DARK PUPITAR",
 	"DARK TYRANITAR",
 	"DARK CELEBI",
+	/*
 	// Owner's Pokemon
 	// Brock
 	"BROCK'S SANDSHREW",

@@ -384,3 +384,11 @@ bool BattleEngine::can_evolve(const BattleCard& from, const BattleCard& to) cons
 
 	return to_data->header.type == CardType::CARD_POKEMON && from_data->header.name_id == to_data->pokemon.evolution_from && from_data->pokemon.stage + 1 == to_data->pokemon.stage;
 }
+
+void BattleEngine::evolve(BattleCard& evolution, ZoneId zone_id) {
+	Zone& zone = m_field.get_zone(zone_id);
+	BattleCard& target = zone.card;
+	target.card_id = evolution.card_id;
+	target.can_evolve = false;
+	m_player_hand.remove_card(m_cursor.hand_idx());
+}

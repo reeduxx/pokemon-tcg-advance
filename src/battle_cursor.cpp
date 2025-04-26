@@ -5,6 +5,7 @@
 BattleCursor::BattleCursor() : Cursor(bn::sprite_items::battle_cursor) {}
 
 void BattleCursor::update() {
+    // Logic for cursor animation
     ++m_timer;
     int angle = (m_timer * 16) & 2047;
     int offset = (bn::lut_sin(angle) * 2).round_integer();

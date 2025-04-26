@@ -49,9 +49,7 @@ void BattleManager::update_input() {
                 }
             }
         }
-    }
-    
-    if(m_mode == InputMode::MENU) {
+    } else if(m_mode == InputMode::MENU) {
         m_menu_cursor_controller.update();
 
         if(bn::keypad::a_pressed()) {
@@ -59,12 +57,30 @@ void BattleManager::update_input() {
             execute_menu_action(i);
             m_menu.hide();
             m_menu_cursor.set_visible(false);
-            m_mode = InputMode::BATTLE;
+
+            if(m_mode != InputMode::EVOLUTION) {
+                m_mode = InputMode::BATTLE;
+            }
         }
 
         if(bn::keypad::b_pressed()) {
             m_menu.hide();
             m_menu_cursor.set_visible(false);
+            m_mode = InputMode::BATTLE;
+        }
+    } else if(m_mode == InputMode::EVOLUTION) {
+        m_battle_cursor_controller.update();
+
+        if(bn::keypad::a_pressed()) {
+            ZoneId zone_id = m_battle_cursor_controller.target_zone();
+            m_battle_engine.evolve(m_selected_card, zone_id);
+            m_battle_cursor_controller.cancel_target_selection();
+            m_battle_cursor.set_hand_idx(0);
+            m_mode = InputMode::BATTLE;
+        }
+
+        if(bn::keypad::b_pressed()) {
+            m_battle_cursor_controller.cancel_target_selection();
             m_mode = InputMode::BATTLE;
         }
     }
@@ -178,15 +194,31 @@ void BattleManager::execute_menu_action(int i) {
     } else if(action == "CANCEL") {
         return;
     } else if(action == "EVOLVE") {
+        m_mode = InputMode::EVOLUTION;
+        bn::vector<ZoneId, 6> target_zones;
+
         for(ZoneId zone_id = ZoneId::PLAYER_BENCH_1; zone_id <= ZoneId::PLAYER_ACTIVE; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
             Zone& zone = m_field.get_zone(zone_id);
 
             if(zone.occupied && m_battle_engine.can_evolve(zone.card, m_selected_card)) {
-                // TODO: Finish implementing evolution.
-                return;
+                target_zones.push_back(zone_id);
             }
         }
+
+        m_battle_cursor_controller.begin_target_selection(target_zones);
+        BN_LOG("Set mode to " + bn::to_string<13>(static_cast<int>(m_mode)));
+        return;
     } else if(action == "PLAY") {
+        for(ZoneId zone_id = ZoneId::PLAYER_BENCH_1; zone_id <= ZoneId::PLAYER_ACTIVE; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
+            Zone& zone = m_field.get_zone(zone_id);
+
+            if(!zone.occupied) {
+                m_field.place_card(zone_id, m_selected_card);
+                m_player_hand.remove_card(m_battle_cursor.hand_idx());
+                m_battle_cursor.set_hand_idx(0);
+                break;
+            }
+        }
         return;
     } else if(action == "VIEW") {
         return;

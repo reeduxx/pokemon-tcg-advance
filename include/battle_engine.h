@@ -75,6 +75,7 @@ class BattleEngine {
 		void draw_hand(TurnPlayer turn_player);
 		void try_draw_card(TurnPlayer turn_player);
 		bool can_evolve(const BattleCard& from, const BattleCard& to) const;
+		void evolve(BattleCard& evolution, ZoneId zone_id);
 	private:
 		void init_decks();
 		void task_coin_flip();
