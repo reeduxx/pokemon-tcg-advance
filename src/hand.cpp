@@ -81,7 +81,7 @@ void Hand::set_visible(bool visible) {
 	}
 }
 
-void Hand::shuffle(Deck& deck) {
+void Hand::shuffle_into(Deck& deck) {
 	while(!m_cards.empty()) {
 		BattleCard card = m_cards.back();
 		m_cards.pop_back();
@@ -94,4 +94,5 @@ void Hand::shuffle(Deck& deck) {
 
 	m_sprites.clear();
 	m_pos.clear();
+	shuffle_deck(deck);
 }

@@ -1,4 +1,5 @@
 #include "bn_keypad.h"
+#include "bn_log.h"
 #include "battle_engine.h"
 #include "card_ids.h"
 #include "cards.h"
@@ -94,7 +95,7 @@ void BattleEngine::task_mulligan() {
 		++m_player_mulligans;
 		m_field.scroll_to_player();
 		m_player_hand.set_visible(true);
-		m_player_hand.shuffle(m_player_deck);
+		m_player_hand.shuffle_into(m_player_deck);
 		draw_hand(TurnPlayer::PLAYER);
 	}
 
@@ -102,7 +103,7 @@ void BattleEngine::task_mulligan() {
 		++m_opponent_mulligans;
 		m_field.scroll_to_opponent();
 		m_opponent_hand.set_visible(true);
-		m_opponent_hand.shuffle(m_opponent_deck);
+		m_opponent_hand.shuffle_into(m_opponent_deck);
 		draw_hand(TurnPlayer::OPPONENT);
 	}
 

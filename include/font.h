@@ -6,24 +6,24 @@
 #include "bn_sprite_items_font.h"
 
 namespace font {
-    constexpr bn::utf8_character font_utf8_characters[] = {"¡"};
+    constexpr bn::utf8_character font_utf8_characters[] = {"¡", "×", "¿", "À", "Á", "Â", "Ã", "Ä"};
 
     constexpr int8_t font_character_widths[] = {
     3, // 32
-    4, // 33 !
+    3, // 33 !
     6, // 34 "
     0, // 35 # unused
-    0, // 36 $
+    7, // 36 $
     0, // 37 % unused
-    0, // 38 &
-    0, // 39 '
-    0, // 40 (
-    0, // 41 )
+    7, // 38 &
+    3, // 39 '
+    3, // 40 (
+    3, // 41 )
     0, // 42 * unused
-    0, // 43 +
-    0, // 44 ,
-    6, // 45 -
-    3, // 46 .
+    7, // 43 +
+    4, // 44 ,
+    7, // 45 -
+    4, // 46 .
     7, // 47 /
     7, // 48 0
     7, // 49 1
@@ -35,8 +35,8 @@ namespace font {
     7, // 55 7
     7, // 56 8
     7, // 57 9
-    3, // 58 :
-    3, // 59 ;
+    4, // 58 :
+    4, // 59 ;
     7, // 60 <
     7, // 61 =
     7, // 62 >
@@ -82,10 +82,10 @@ namespace font {
     7, // 102 f
     7, // 103 g
     7, // 104 h
-    5, // 105 i
+    3, // 105 i
     6, // 106 j
     7, // 107 k
-    5, // 108 l
+    3, // 108 l
     7, // 109 m
     7, // 110 n
     7, // 111 o
@@ -104,7 +104,14 @@ namespace font {
     0, // 124 | unused
     0, // 125 } unused
     0, // 126 ~ unused
-    0, // ¡
+    3, // ¡
+    7, // ×
+    7, // ¿
+    7, // À
+    7, // Á
+    7, // Â
+    7, // Ã
+    7, // Ä
     };
 
     constexpr bn::span<const bn::utf8_character> font_utf8_characters_span(font_utf8_characters);

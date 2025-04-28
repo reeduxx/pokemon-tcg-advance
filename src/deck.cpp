@@ -4,8 +4,8 @@
 #include "rng.h"
 
 void shuffle_deck(Deck& deck) {
-	for(int i = 0; i < deck.size(); ++i) {
-		int j = RNG::instance().get_int(deck.size());
+	for(int i = deck.size() - 1; i > 0; --i) {
+		int j = RNG::instance().get_int(i + 1);
 		bn::swap(deck[i], deck[j]);
 	}
 }

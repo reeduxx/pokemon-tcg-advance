@@ -13,7 +13,7 @@ int main() {
 		bn::core::update();
 	}
 
-	RNG::instance().seed(seed);
+	RNG::instance().seed(0x41C64E6D * seed + 0x0000303B);
 	
     while(true) {
 		battle_manager.update();

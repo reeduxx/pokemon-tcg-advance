@@ -8,6 +8,7 @@ RNG& RNG::instance() {
 }
 
 void RNG::update() {
+    seed(0x41C64E6D * _rand.seed() + 0x0000303B);
     _rand.update();
 }
 
