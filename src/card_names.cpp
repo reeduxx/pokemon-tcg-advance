@@ -123,7 +123,7 @@ static const char* const card_names[] = {
 	"SEADRA",
 	"GOLDEEN",
 	"SEAKING",
-	"STARYU",
+	"STARYU!?.",
 	"STARMIE",
 	"MR. MIME",
 	"SCYTHER",

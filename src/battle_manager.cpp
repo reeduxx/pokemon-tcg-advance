@@ -209,14 +209,16 @@ void BattleManager::execute_menu_action(int i) {
         BN_LOG("Set mode to " + bn::to_string<13>(static_cast<int>(m_mode)));
         return;
     } else if(action == "PLAY") {
-        for(ZoneId zone_id = ZoneId::PLAYER_BENCH_1; zone_id <= ZoneId::PLAYER_ACTIVE; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
-            Zone& zone = m_field.get_zone(zone_id);
-
-            if(!zone.occupied) {
-                m_field.place_card(zone_id, m_selected_card);
-                m_player_hand.remove_card(m_battle_cursor.hand_idx());
-                m_battle_cursor.set_hand_idx(0);
-                break;
+        if(data->header.type == CardType::CARD_POKEMON) {
+            for(ZoneId zone_id = ZoneId::PLAYER_BENCH_1; zone_id <= ZoneId::PLAYER_ACTIVE; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
+                Zone& zone = m_field.get_zone(zone_id);
+    
+                if(!zone.occupied) {
+                    m_field.place_card(zone_id, m_selected_card);
+                    m_player_hand.remove_card(m_battle_cursor.hand_idx());
+                    m_battle_cursor.set_hand_idx(0);
+                    break;
+                }
             }
         }
         return;
