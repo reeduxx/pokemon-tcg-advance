@@ -1054,7 +1054,7 @@ static const char* const card_names[] = {
 	"ENERGY SWITCH",
 	"ERIKA",
 	"ERIKA'S KINDNESS",
-	"ERIKA'S MAIDS"
+	"ERIKA'S MAIDS",
 	"ERIKA'S PERFUME",
 	"EXP.ALL",
 	"FAST BALL",
