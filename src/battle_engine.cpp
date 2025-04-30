@@ -393,3 +393,7 @@ void BattleEngine::evolve(BattleCard& evolution, ZoneId zone_id) {
 	target.can_evolve = false;
 	m_player_hand.remove_card(m_cursor.hand_idx());
 }
+
+bool BattleEngine::can_attach_energy() const {
+	return m_energy_attached;
+}

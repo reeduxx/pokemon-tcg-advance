@@ -53,19 +53,25 @@ int Field::zone_count() const {
 }
 
 void Field::initialize_zones() {
+	m_zones[static_cast<int>(ZoneId::PLAYER_DECK)] = Zone(ZoneId::PLAYER_DECK, bn::fixed_point(100, -40));
+	m_zones[static_cast<int>(ZoneId::PLAYER_DISCARD)] = Zone(ZoneId::PLAYER_DISCARD, bn::fixed_point(100, 0));
+	m_zones[static_cast<int>(ZoneId::PLAYER_PRIZES)] = Zone(ZoneId::PLAYER_PRIZES, bn::fixed_point(-100, -16));
 	m_zones[static_cast<int>(ZoneId::PLAYER_BENCH_1)] = Zone(ZoneId::PLAYER_BENCH_1, bn::fixed_point(-64, 0));
 	m_zones[static_cast<int>(ZoneId::PLAYER_BENCH_2)] = Zone(ZoneId::PLAYER_BENCH_2, bn::fixed_point(-32, 0));
 	m_zones[static_cast<int>(ZoneId::PLAYER_BENCH_3)] = Zone(ZoneId::PLAYER_BENCH_3, bn::fixed_point(0, 0));
 	m_zones[static_cast<int>(ZoneId::PLAYER_BENCH_4)] = Zone(ZoneId::PLAYER_BENCH_4, bn::fixed_point(32, 0));
 	m_zones[static_cast<int>(ZoneId::PLAYER_BENCH_5)] = Zone(ZoneId::PLAYER_BENCH_5, bn::fixed_point(64, 0));
 	m_zones[static_cast<int>(ZoneId::PLAYER_ACTIVE)] = Zone(ZoneId::PLAYER_ACTIVE, bn::fixed_point(0, -48));
-	m_zones[static_cast<int>(ZoneId::STADIUM)] = Zone(ZoneId::STADIUM, bn::fixed_point(-34, -48), bn::fixed_point(-34, 48));
+	m_zones[static_cast<int>(ZoneId::STADIUM)] = Zone(ZoneId::STADIUM, bn::fixed_point(-40, -60), bn::fixed_point(-40, 35));
 	m_zones[static_cast<int>(ZoneId::OPPONENT_ACTIVE)] = Zone(ZoneId::OPPONENT_ACTIVE, bn::fixed_point(0, 23));
 	m_zones[static_cast<int>(ZoneId::OPPONENT_BENCH_1)] = Zone(ZoneId::OPPONENT_BENCH_1, bn::fixed_point(-64, -25));
 	m_zones[static_cast<int>(ZoneId::OPPONENT_BENCH_2)] = Zone(ZoneId::OPPONENT_BENCH_2, bn::fixed_point(-32, -25));
 	m_zones[static_cast<int>(ZoneId::OPPONENT_BENCH_3)] = Zone(ZoneId::OPPONENT_BENCH_3, bn::fixed_point(0, -25));
 	m_zones[static_cast<int>(ZoneId::OPPONENT_BENCH_4)] = Zone(ZoneId::OPPONENT_BENCH_4, bn::fixed_point(32, -25));
 	m_zones[static_cast<int>(ZoneId::OPPONENT_BENCH_5)] = Zone(ZoneId::OPPONENT_BENCH_5, bn::fixed_point(64, -25));
+	m_zones[static_cast<int>(ZoneId::OPPONENT_PRIZES)] = Zone(ZoneId::OPPONENT_PRIZES, bn::fixed_point(100, -19));
+	m_zones[static_cast<int>(ZoneId::OPPONENT_DISCARD)] = Zone(ZoneId::OPPONENT_DISCARD, bn::fixed_point(-100, -25));
+	m_zones[static_cast<int>(ZoneId::OPPONENT_DECK)] = Zone(ZoneId::OPPONENT_DECK, bn::fixed_point(-100, 15));
 }
 
 void Field::set_side(Side side) {

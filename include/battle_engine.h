@@ -56,6 +56,7 @@ class BattleEngine {
 		TurnPlayer m_turn_player;
 		bool m_coin_flipping = false;
 		int m_player_mulligans = 0, m_opponent_mulligans = 0;
+		bool m_energy_attached = false;
 	public:
 		BattleEngine(BattleCursor& cursor, Hand& player_hand, Hand& opponent_hand, Field& field);
 		void update();
@@ -76,6 +77,7 @@ class BattleEngine {
 		void try_draw_card(TurnPlayer turn_player);
 		bool can_evolve(const BattleCard& from, const BattleCard& to) const;
 		void evolve(BattleCard& evolution, ZoneId zone_id);
+		bool can_attach_energy() const;
 	private:
 		void init_decks();
 		void task_coin_flip();
