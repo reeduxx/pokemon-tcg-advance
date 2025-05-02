@@ -16,8 +16,10 @@
 
 enum class InputMode {
     BATTLE,
+    ENERGY,
     EVOLUTION,
-    MENU
+    MENU,
+    RETREAT
 };
 
 class BattleManager {

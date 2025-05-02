@@ -27,6 +27,7 @@ void BattleManager::update() {
 }
 
 void BattleManager::update_input() {
+    BN_LOG(static_cast<int>(m_mode));
     if(m_mode == InputMode::BATTLE) {
         m_battle_cursor_controller.update();
 
@@ -49,23 +50,19 @@ void BattleManager::update_input() {
                 }
             }
         }
-    } else if(m_mode == InputMode::MENU) {
-        m_menu_cursor_controller.update();
+    } else if(m_mode == InputMode::ENERGY) {
+        m_battle_cursor_controller.update();
 
         if(bn::keypad::a_pressed()) {
-            int i = m_menu_cursor.idx();
-            execute_menu_action(i);
-            m_menu.hide();
-            m_menu_cursor.set_visible(false);
-
-            if(m_mode != InputMode::EVOLUTION) {
-                m_mode = InputMode::BATTLE;
-            }
+            ZoneId zone_id = m_battle_cursor_controller.target_zone();
+            m_battle_engine.attach(m_selected_card, zone_id);
+            m_battle_cursor_controller.cancel_target_selection();
+            m_battle_cursor.set_hand_idx(0);
+            m_mode = InputMode::BATTLE;
         }
 
         if(bn::keypad::b_pressed()) {
-            m_menu.hide();
-            m_menu_cursor.set_visible(false);
+            m_battle_cursor_controller.cancel_target_selection();
             m_mode = InputMode::BATTLE;
         }
     } else if(m_mode == InputMode::EVOLUTION) {
@@ -81,6 +78,35 @@ void BattleManager::update_input() {
 
         if(bn::keypad::b_pressed()) {
             m_battle_cursor_controller.cancel_target_selection();
+            m_mode = InputMode::BATTLE;
+        }
+    } else if(m_mode == InputMode::MENU) {
+        m_menu_cursor_controller.update();
+
+        if(bn::keypad::a_pressed()) {
+            int i = m_menu_cursor.idx();
+            execute_menu_action(i);
+            m_menu.hide();
+            m_menu_cursor.set_visible(false);
+            
+            if(m_mode == InputMode::MENU) {
+                m_mode = InputMode::BATTLE;
+            }
+        }
+
+        if(bn::keypad::b_pressed()) {
+            m_menu.hide();
+            m_menu_cursor.set_visible(false);
+            m_mode = InputMode::BATTLE;
+        }
+    } else if(m_mode == InputMode::RETREAT) {
+        m_battle_cursor_controller.update();
+
+        if(bn::keypad::a_pressed()) {
+            ZoneId zone_id = m_battle_cursor_controller.target_zone();
+            m_battle_engine.retreat(m_selected_card, zone_id);
+            m_battle_cursor_controller.cancel_target_selection();
+            m_battle_cursor.set_hand_idx(0);
             m_mode = InputMode::BATTLE;
         }
     }
@@ -159,12 +185,12 @@ void BattleManager::show_card_menu(const BattleCard& card) {
                     }
                 }
             }
-        } else if(m_battle_cursor.mode() == CursorMode::FIELD) {
+        } else if(m_battle_cursor.mode() == CursorMode::FIELD && m_battle_engine.can_retreat(card)) {
             options[count++] = "RETREAT";
         }
     } else if(data->header.type == CardType::CARD_TRAINER) {
         options[count++] = "PLAY";
-    } else if(data->header.type == CardType::CARD_ENERGY) {
+    } else if(data->header.type == CardType::CARD_ENERGY && m_battle_engine.can_attach_energy()) {
         options[count++] = "ATTACH";
     }
 
@@ -190,7 +216,21 @@ void BattleManager::execute_menu_action(int i) {
     const bn::string<24>& action = m_menu.option(i);
 
     if(action == "ATTACH") {
-        return;
+        if(data->header.type == CardType::CARD_ENERGY) {
+            m_mode = InputMode::ENERGY;
+            bn::vector<ZoneId, 6> target_zones;
+
+            for(ZoneId zone_id = ZoneId::PLAYER_BENCH_1; zone_id <= ZoneId::PLAYER_ACTIVE; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
+                Zone& zone = m_field.get_zone(zone_id);
+
+                if(zone.occupied) {
+                    target_zones.push_back(zone_id);
+                }
+            }
+
+            m_battle_cursor_controller.begin_target_selection(target_zones);
+            return;
+        }
     } else if(action == "CANCEL") {
         return;
     } else if(action == "EVOLVE") {
@@ -206,7 +246,6 @@ void BattleManager::execute_menu_action(int i) {
         }
 
         m_battle_cursor_controller.begin_target_selection(target_zones);
-        BN_LOG("Set mode to " + bn::to_string<13>(static_cast<int>(m_mode)));
         return;
     } else if(action == "PLAY") {
         if(data->header.type == CardType::CARD_POKEMON) {
@@ -222,7 +261,21 @@ void BattleManager::execute_menu_action(int i) {
             }
         }
         return;
-    } else if(action == "VIEW") {
+    } else if(action == "RETREAT") {
+        m_mode = InputMode::RETREAT;
+        bn::vector<ZoneId, 5> target_zones;
+
+        for(ZoneId zone_id = ZoneId::PLAYER_BENCH_1; zone_id <= ZoneId::PLAYER_BENCH_5; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
+            Zone& zone = m_field.get_zone(zone_id);
+            
+            if(zone.occupied) {
+                target_zones.push_back(zone_id);
+            }
+        }
+
+        m_battle_cursor_controller.begin_target_selection(target_zones);
+        return;
+    }else if(action == "VIEW") {
         return;
     }
 }

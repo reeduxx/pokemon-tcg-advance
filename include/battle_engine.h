@@ -78,6 +78,9 @@ class BattleEngine {
 		bool can_evolve(const BattleCard& from, const BattleCard& to) const;
 		void evolve(BattleCard& evolution, ZoneId zone_id);
 		bool can_attach_energy() const;
+		void attach(BattleCard& card, ZoneId zone_id);
+		bool can_retreat(const BattleCard& card) const;
+		void retreat(BattleCard& card, ZoneId zone_id);
 	private:
 		void init_decks();
 		void task_coin_flip();

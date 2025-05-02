@@ -35,8 +35,12 @@ void BattleCursorController::update() {
                 snap_to_zone(ZoneId::PLAYER_BENCH_5);
             } else if(zone_id == ZoneId::PLAYER_ACTIVE || zone_id == ZoneId::OPPONENT_ACTIVE) {
                 snap_to_zone(ZoneId::STADIUM, m_battle_engine.field().side());
-            } else if(zone_id >= ZoneId::OPPONENT_BENCH_1 && zone_id <= ZoneId::OPPONENT_BENCH_5) {
-                snap_to_zone(zone_id == ZoneId::OPPONENT_BENCH_1 ? ZoneId::OPPONENT_BENCH_5 : static_cast<ZoneId>(static_cast<int>(zone_id) - 1));
+            } else if(zone_id == ZoneId::OPPONENT_BENCH_1) {
+                snap_to_zone(ZoneId::OPPONENT_DISCARD);
+            } else if(zone_id > ZoneId::OPPONENT_BENCH_1 && zone_id <= ZoneId::OPPONENT_BENCH_5) {
+                snap_to_zone(static_cast<ZoneId>(static_cast<int>(zone_id) - 1));
+            } else if(zone_id == ZoneId::OPPONENT_PRIZES) {
+                snap_to_zone(ZoneId::OPPONENT_BENCH_5);
             }
         } else if(m_cursor.mode() == CursorMode::TARGET) {
             m_target_idx = (m_target_idx - 1 + m_target_zones.size()) % m_target_zones.size();
@@ -65,8 +69,12 @@ void BattleCursorController::update() {
                 snap_to_zone(ZoneId::PLAYER_DISCARD);
             } else if(zone_id == ZoneId::STADIUM) {
                 snap_to_zone(m_battle_engine.field().side() == Side::SIDE_PLAYER ? ZoneId::PLAYER_ACTIVE : ZoneId::OPPONENT_ACTIVE);
-            } else if(zone_id >= ZoneId::OPPONENT_BENCH_1 && zone_id <= ZoneId::OPPONENT_BENCH_5) {
-                snap_to_zone(zone_id == ZoneId::OPPONENT_BENCH_5 ? ZoneId::OPPONENT_BENCH_1 : static_cast<ZoneId>(static_cast<int>(zone_id) + 1));
+            } else if(zone_id == ZoneId::OPPONENT_DISCARD) {
+                snap_to_zone(ZoneId::OPPONENT_BENCH_1);
+            } else if(zone_id >= ZoneId::OPPONENT_BENCH_1 && zone_id < ZoneId::OPPONENT_BENCH_5) {
+                snap_to_zone(static_cast<ZoneId>(static_cast<int>(zone_id) + 1));
+            } else if(zone_id == ZoneId::OPPONENT_BENCH_5) {
+                snap_to_zone(ZoneId::OPPONENT_PRIZES);
             }
         } else if(m_cursor.mode() == CursorMode::TARGET) {
             m_target_idx = (m_target_idx + 1) % m_target_zones.size();
@@ -90,13 +98,17 @@ void BattleCursorController::update() {
                 snap_to_zone(ZoneId::OPPONENT_ACTIVE);
             } else if(zone_id == ZoneId::OPPONENT_ACTIVE) {
                 snap_to_zone(ZoneId::OPPONENT_BENCH_1);
+            } else if(zone_id == ZoneId::OPPONENT_DECK) {
+                snap_to_zone(ZoneId::OPPONENT_DISCARD);
             }
         }
     }
     // Down
     if(bn::keypad::down_pressed() && m_battle_engine.current_state() >= BattleState::BATTLE_START) {
         if(m_cursor.mode() == CursorMode::FIELD) {
-            if(zone_id >= ZoneId::OPPONENT_BENCH_1 && zone_id <= ZoneId::OPPONENT_BENCH_5) {
+            if(zone_id == ZoneId::OPPONENT_DISCARD) {
+                snap_to_zone(ZoneId::OPPONENT_DECK);
+            } else if(zone_id >= ZoneId::OPPONENT_BENCH_1 && zone_id <= ZoneId::OPPONENT_BENCH_5) {
                 snap_to_zone(ZoneId::OPPONENT_ACTIVE);
             } else if(zone_id == ZoneId::OPPONENT_ACTIVE) {
                 m_battle_engine.field().scroll_to_player();

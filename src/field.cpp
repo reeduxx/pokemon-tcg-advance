@@ -69,7 +69,7 @@ void Field::initialize_zones() {
 	m_zones[static_cast<int>(ZoneId::OPPONENT_BENCH_3)] = Zone(ZoneId::OPPONENT_BENCH_3, bn::fixed_point(0, -25));
 	m_zones[static_cast<int>(ZoneId::OPPONENT_BENCH_4)] = Zone(ZoneId::OPPONENT_BENCH_4, bn::fixed_point(32, -25));
 	m_zones[static_cast<int>(ZoneId::OPPONENT_BENCH_5)] = Zone(ZoneId::OPPONENT_BENCH_5, bn::fixed_point(64, -25));
-	m_zones[static_cast<int>(ZoneId::OPPONENT_PRIZES)] = Zone(ZoneId::OPPONENT_PRIZES, bn::fixed_point(100, -19));
+	m_zones[static_cast<int>(ZoneId::OPPONENT_PRIZES)] = Zone(ZoneId::OPPONENT_PRIZES, bn::fixed_point(100, -9));
 	m_zones[static_cast<int>(ZoneId::OPPONENT_DISCARD)] = Zone(ZoneId::OPPONENT_DISCARD, bn::fixed_point(-100, -25));
 	m_zones[static_cast<int>(ZoneId::OPPONENT_DECK)] = Zone(ZoneId::OPPONENT_DECK, bn::fixed_point(-100, 15));
 }

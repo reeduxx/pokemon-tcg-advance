@@ -288,6 +288,7 @@ TurnPhase BattleEngine::current_phase() const {
 }
 
 void BattleEngine::reset_phase() {
+	m_energy_attached = false;
 	m_phase = TurnPhase::DRAW;
 }
 
@@ -395,5 +396,48 @@ void BattleEngine::evolve(BattleCard& evolution, ZoneId zone_id) {
 }
 
 bool BattleEngine::can_attach_energy() const {
-	return m_energy_attached;
+	return !m_energy_attached;
+}
+
+void BattleEngine::attach(BattleCard& card, ZoneId zone_id) {
+	Zone& zone = m_field.get_zone(zone_id);
+	BattleCard& target = zone.card;
+	const Card* data = get_card_by_id(card.card_id);
+
+	if(data->header.type == CardType::CARD_ENERGY) {
+		target.energy.push_back(card.card_id);
+		m_energy_attached = true;
+	}
+
+	m_player_hand.remove_card(m_cursor.hand_idx());
+}
+
+bool BattleEngine::can_retreat(const BattleCard& card) const {
+	const Card* data = get_card_by_id(card.card_id);
+	
+	if(card.energy.size() < data->pokemon.retreat_cost) {
+		return false;
+	}
+	
+	return true;
+}
+
+void BattleEngine::retreat(BattleCard& card, ZoneId zone_id) {
+	Zone& zone = m_field.get_zone(zone_id);
+	Zone& active = m_field.get_zone(ZoneId::PLAYER_ACTIVE);
+	BattleCard& target = zone.card;
+	const Card* data = get_card_by_id(card.card_id);
+
+	if(data->pokemon.retreat_cost > 0) {
+		for(int i = 0; i < data->pokemon.retreat_cost; ++i) {
+			card.energy.pop_back();
+		}
+	}
+
+	active.card = target;
+	zone.card = card;
+
+	auto temp = active.sprite.value();
+	active.sprite = zone.sprite.value();
+	zone.sprite = temp;
 }
