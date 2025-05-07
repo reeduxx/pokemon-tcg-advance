@@ -422,22 +422,20 @@ bool BattleEngine::can_retreat(const BattleCard& card) const {
 	return true;
 }
 
-void BattleEngine::retreat(BattleCard& card, ZoneId zone_id) {
-	Zone& zone = m_field.get_zone(zone_id);
+void BattleEngine::retreat(ZoneId zone_id) {
 	Zone& active = m_field.get_zone(ZoneId::PLAYER_ACTIVE);
-	BattleCard& target = zone.card;
-	const Card* data = get_card_by_id(card.card_id);
+	Zone& bench_target = m_field.get_zone(zone_id);
+	const Card* data = get_card_by_id(active.card.card_id);
 
-	if(data->pokemon.retreat_cost > 0) {
-		for(int i = 0; i < data->pokemon.retreat_cost; ++i) {
-			card.energy.pop_back();
-		}
+	if(!data || data->header.type != CardType::CARD_POKEMON) {
+		return;
 	}
 
-	active.card = target;
-	zone.card = card;
+	int cost = data->pokemon.retreat_cost;
 
-	auto temp = active.sprite.value();
-	active.sprite = zone.sprite.value();
-	zone.sprite = temp;
+	for(int i = 0; i < cost && !active.card.energy.empty(); i++) {
+		active.card.energy.pop_back();
+	}
+
+	bn::swap(active.card, bench_target.card);
 }

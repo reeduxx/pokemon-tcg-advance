@@ -35,7 +35,7 @@ class BattleManager {
         Menu m_menu;
         MenuCursorController m_menu_cursor_controller;
         InputMode m_mode = InputMode::BATTLE;
-        BattleCard m_selected_card;
+        BattleCard* m_selected_card = nullptr;
     public:
         BattleManager();
         void update();
@@ -44,7 +44,7 @@ class BattleManager {
     private:
         void update_input();
         void update_visuals();
-        void show_card_menu(const BattleCard& card);
+        void show_card_menu(BattleCard& card);
         void execute_menu_action(int i);
 };
 

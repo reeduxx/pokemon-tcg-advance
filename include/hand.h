@@ -21,7 +21,8 @@ class Hand {
 		void update();
 		void set_pos(int i, bn::fixed_point pos);
 		int card_count() const;
-		BattleCard get_card(int i) const;
+		BattleCard& get_card(int i);
+		const BattleCard& get_card(int i) const;
 		bn::fixed_point get_card_pos(int i) const;
 		void set_visible(bool visible);
 		void shuffle_into(Deck& deck);

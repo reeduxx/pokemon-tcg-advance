@@ -35,15 +35,15 @@ void BattleManager::update_input() {
             if(bn::keypad::a_pressed()) {
                 if(m_battle_cursor.mode() == CursorMode::HAND) {
                     int i = m_battle_cursor.hand_idx();
-                    const BattleCard& card = m_player_hand.get_card(i);
+                    BattleCard& card = m_player_hand.get_card(i);
                     show_card_menu(card);
                     return;
                 } else if(m_battle_cursor.mode() == CursorMode::FIELD) {
                     ZoneId zone_id = m_battle_cursor.zone();
-                    const Zone& zone_data = m_field.get_zone(zone_id);
+                    Zone& zone_data = m_field.get_zone(zone_id);
 
                     if(zone_data.occupied) {
-                        const BattleCard& card = zone_data.card;
+                        BattleCard& card = zone_data.card;
                         show_card_menu(card);
                         return;
                     }
@@ -55,7 +55,7 @@ void BattleManager::update_input() {
 
         if(bn::keypad::a_pressed()) {
             ZoneId zone_id = m_battle_cursor_controller.target_zone();
-            m_battle_engine.attach(m_selected_card, zone_id);
+            m_battle_engine.attach(*m_selected_card, zone_id);
             m_battle_cursor_controller.cancel_target_selection();
             m_battle_cursor.set_hand_idx(0);
             m_mode = InputMode::BATTLE;
@@ -70,7 +70,7 @@ void BattleManager::update_input() {
 
         if(bn::keypad::a_pressed()) {
             ZoneId zone_id = m_battle_cursor_controller.target_zone();
-            m_battle_engine.evolve(m_selected_card, zone_id);
+            m_battle_engine.evolve(*m_selected_card, zone_id);
             m_battle_cursor_controller.cancel_target_selection();
             m_battle_cursor.set_hand_idx(0);
             m_mode = InputMode::BATTLE;
@@ -104,9 +104,32 @@ void BattleManager::update_input() {
 
         if(bn::keypad::a_pressed()) {
             ZoneId zone_id = m_battle_cursor_controller.target_zone();
-            m_battle_engine.retreat(m_selected_card, zone_id);
+            Zone& active = m_field.get_zone(ZoneId::PLAYER_ACTIVE);
+            Zone& bench_target = m_field.get_zone(zone_id);
+            
+            if(active.sprite && bench_target.sprite) {
+                bn::sprite_ptr tmp = *active.sprite;
+                active.sprite = *bench_target.sprite;
+                bench_target.sprite = tmp;
+            }
+
+            m_battle_engine.retreat(zone_id);
+
+            if(active.sprite) {
+                active.sprite->set_position(active.m_pos);
+            }
+
+            if(bench_target.sprite) {
+                bench_target.sprite->set_position(bench_target.m_pos);
+            }
+
             m_battle_cursor_controller.cancel_target_selection();
             m_battle_cursor.set_hand_idx(0);
+            m_mode = InputMode::BATTLE;
+        }
+
+        if(bn::keypad::b_pressed()) {
+            m_battle_cursor_controller.cancel_target_selection();
             m_mode = InputMode::BATTLE;
         }
     }
@@ -152,7 +175,7 @@ void BattleManager::update_visuals() {
     }
 }
 
-void BattleManager::show_card_menu(const BattleCard& card) {
+void BattleManager::show_card_menu(BattleCard& card) {
     bn::array<bn::string<24>, 4> options;
     int count = 0;
     const Card* data = get_card_by_id(card.card_id);
@@ -203,11 +226,11 @@ void BattleManager::show_card_menu(const BattleCard& card) {
     m_menu_cursor.set_idx(0);
     m_menu_cursor.set_pos(m_menu.option_pos(0));
     m_mode = InputMode::MENU;
-    m_selected_card = card;
+    m_selected_card = &card;
 }
 
 void BattleManager::execute_menu_action(int i) {
-    const Card* data = get_card_by_id(m_selected_card.card_id);
+    const Card* data = get_card_by_id(m_selected_card->card_id);
 
     if(!data) {
         return;
@@ -240,7 +263,7 @@ void BattleManager::execute_menu_action(int i) {
         for(ZoneId zone_id = ZoneId::PLAYER_BENCH_1; zone_id <= ZoneId::PLAYER_ACTIVE; zone_id = static_cast<ZoneId>(static_cast<int>(zone_id) + 1)) {
             Zone& zone = m_field.get_zone(zone_id);
 
-            if(zone.occupied && m_battle_engine.can_evolve(zone.card, m_selected_card)) {
+            if(zone.occupied && m_battle_engine.can_evolve(zone.card, *m_selected_card)) {
                 target_zones.push_back(zone_id);
             }
         }
@@ -253,7 +276,7 @@ void BattleManager::execute_menu_action(int i) {
                 Zone& zone = m_field.get_zone(zone_id);
     
                 if(!zone.occupied) {
-                    m_field.place_card(zone_id, m_selected_card);
+                    m_field.place_card(zone_id, *m_selected_card);
                     m_player_hand.remove_card(m_battle_cursor.hand_idx());
                     m_battle_cursor.set_hand_idx(0);
                     break;

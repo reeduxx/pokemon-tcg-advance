@@ -80,7 +80,7 @@ class BattleEngine {
 		bool can_attach_energy() const;
 		void attach(BattleCard& card, ZoneId zone_id);
 		bool can_retreat(const BattleCard& card) const;
-		void retreat(BattleCard& card, ZoneId zone_id);
+		void retreat(ZoneId zone_id);
 	private:
 		void init_decks();
 		void task_coin_flip();

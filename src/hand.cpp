@@ -52,7 +52,11 @@ int Hand::card_count() const {
 	return m_cards.size();
 }
 
-BattleCard Hand::get_card(int i) const {
+BattleCard& Hand::get_card(int i) {
+	return m_cards[i];
+}
+
+const BattleCard& Hand::get_card(int i) const {
 	return m_cards[i];
 }
 
