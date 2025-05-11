@@ -1,4 +1,4 @@
-#include "bn_vector.h"
+#include <bn_vector.h>
 #include "battle_cursor.h"
 #include "battle_engine.h"
 #include "cursor_controller.h"

@@ -65,6 +65,10 @@ Developed by reeduxx.
 
 This project uses [Butano](https://github.com/GValiente/butano), which is licensed under the [zLib license](https://github.com/GValiente/butano/LICENSE).
 
-This is a fan project and is not affiliated with Nintendo, GameFreak, Creatures, or The Pokémon Company. 
+## Font Notice
+The in-game font is derived from the **Pokémon Emerald** font (© Nintendo / Game Freak). It has been reformatted to be compatible with the Butano engine.
 
-**Please support the official TCG and screw scalpers.**
+## Legal Disclaimer
+This is a fan project and is not affiliated with Nintendo, Game Freak, Creatures, or The Pokémon Company. All Pokémon trademarks and related content are owned by their respective holders.
+
+**Please support the official TCG - and screw scalpers.**
