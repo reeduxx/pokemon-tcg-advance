@@ -4,10 +4,10 @@ Pokémon TCG: Advance is an ambitious project to bring the classic TCG to the Ga
 ## TODO & Progress
 ### Card Database Progress
 - [X] Base Set
-- [ ] Jungle
-- [ ] Fossil
+- [X] Jungle
+- [X] Fossil
 - [ ] ~Base Set 2~ *reprint set*
-- [ ] Team Rocket
+- [X] Team Rocket
 - [ ] Gym Heroes
 - [ ] Gym Challenge
 - [ ] Neo Genesis
