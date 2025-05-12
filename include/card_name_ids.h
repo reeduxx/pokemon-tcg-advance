@@ -456,7 +456,7 @@ enum class CardName : uint16_t {
     DARK_MAROWAK,
     DARK_WEEZING,
     DARK_GYARADOS,
-    DARK_VAPREON,
+    DARK_VAPOREON,
     DARK_JOLTEON,
     DARK_FLAREON,
     DARK_OMANYTE,
