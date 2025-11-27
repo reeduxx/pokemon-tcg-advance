@@ -1,4 +1,4 @@
 .vscode
-.elf
-.gba
-.sav
+*.elf
+*.gba
+*.sav
