@@ -1,7 +1,4 @@
-.vscode/
-build/
-*.elf
-*.gba
-*.mp4
-*.png
-*.sav
+.vscode
+.elf
+.gba
+.sav

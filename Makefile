@@ -12,8 +12,6 @@
 # AUDIOTOOL is the path to the tool used process the audio files.
 # DMGAUDIO is a list of files and directories containing files to be processed by the DMG audio backend.
 # DMGAUDIOBACKEND specifies the backend used for DMG audio playback. Supported backends: default, null.
-# FONTS is a list of directories containing font files.
-# TEXTS is a list of directories or filenames containing text files.
 # ROMTITLE is a uppercase ASCII, max 12 characters text string containing the output ROM title.
 # ROMCODE is a uppercase ASCII, max 4 characters text string containing the output ROM code.
 # USERFLAGS is a list of additional compiler flags:
@@ -37,17 +35,15 @@ TARGET      	:=  $(notdir $(CURDIR))
 BUILD       	:=  build
 LIBBUTANO   	:=  ../butano/butano
 PYTHON      	:=  python
-SOURCES     	:=  src 
-INCLUDES    	:=  include ../butano/common/include
+SOURCES     	:=  src
+INCLUDES    	:=  include
 DATA        	:=
-GRAPHICS    	:=  graphics ../butano/common/graphics
+GRAPHICS    	:=  graphics graphics/intro graphics/title_screen graphics/font
 AUDIO       	:=  audio
 AUDIOBACKEND	:=  maxmod
 AUDIOTOOL		:=  
 DMGAUDIO    	:=  dmg_audio
 DMGAUDIOBACKEND	:=  default
-FONTS			:=  
-TEXTS			:=  
 ROMTITLE    	:=  PKMN TCG ADV
 ROMCODE     	:=  PTCG
 USERFLAGS   	:=  

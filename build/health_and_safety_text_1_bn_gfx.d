@@ -1,0 +1,1 @@
+health_and_safety_text_1_bn_gfx.o: health_and_safety_text_1_bn_gfx.s

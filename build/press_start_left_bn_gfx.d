@@ -1,0 +1,1 @@
+press_start_left_bn_gfx.o: press_start_left_bn_gfx.s

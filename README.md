@@ -3,18 +3,16 @@
 Pokémon TCG: Advance is an ambitious project to bring the classic TCG to the Game Boy Advance system using the [Butano](https://github.com/GValiente/butano) engine.
 ## TODO & Progress
 ### Card Database Progress
-- [X] Base Set
-- [X] Jungle
-- [X] Fossil
-- [ ] ~Base Set 2~ *reprint set*
-- [X] Team Rocket
+- [ ] Base Set
+- [ ] Jungle
+- [ ] Fossil
+- [ ] Team Rocket
 - [ ] Gym Heroes
 - [ ] Gym Challenge
 - [ ] Neo Genesis
 - [ ] Neo Discovery
 - [ ] Neo Revelation
 - [ ] Neo Destiny
-- [ ] ~Legendary Collection~ *reprint set*
 - [ ] Expedition Base Set
 - [ ] Aquapolis
 - [ ] Skyridge
@@ -64,6 +62,8 @@ make
 Developed by reeduxx.
 
 This project uses [Butano](https://github.com/GValiente/butano), which is licensed under the [zLib license](https://github.com/GValiente/butano/LICENSE).
+
+Health & Safety graphic ripped by [Depressed Mario](https://www.spriters-resource.com/profile/depressed+mario/)
 
 ## Font Notice
 The in-game font is derived from the **Pokémon Emerald** font (© Nintendo / Game Freak). It has been reformatted to be compatible with the Butano engine.

@@ -165,9 +165,7 @@ namespace font {
     };
 
     constexpr bn::span<const bn::utf8_character> font_utf8_characters_span(font_utf8_characters);
-
     constexpr auto font_utf8_characters_map = bn::utf8_characters_map<font_utf8_characters_span>();
-
     constexpr bn::sprite_font font(bn::sprite_items::font, font_utf8_characters_map.reference(), font_character_widths);
 }
 
