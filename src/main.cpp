@@ -46,7 +46,7 @@ int main() {
                 break;
             case State::MainMenu:
                 if(main_menu && main_menu->update()) {
-                    MainMenu::Choice choice = main_menu->choice();
+                    MainMenu::Choice choice = main_menu->get_choice();
 
                     switch(choice) {
                         case MainMenu::Choice::Continue:

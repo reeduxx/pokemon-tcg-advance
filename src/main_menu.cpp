@@ -61,7 +61,7 @@ void MainMenu::_build_entries(bool has_save, bool ereader_enabled) {
     }
 
     _menu_builder.draw(menu_left_tile, next_top, menu_width_tiles, 4);
-    _entries.push_back(Entry {Choice::Options, next_top, 4 });
+    _entries.push_back(Entry {Choice::Option, next_top, 4 });
 }
 
 void MainMenu::_update_selection() {
@@ -77,35 +77,20 @@ void MainMenu::_update_selection() {
     _selection_window->set_boundaries(top, left, bottom, right);
 }
 
-MainMenu::Choice MainMenu::update() {
-    if(_entries.empty()) {
-        return Choice::None;
+bool MainMenu::update() {
+    switch(_state) {
+        case State::FadeIn:
+            break;
+        case State::WaitInput:
+            _handle_input();
+            break;
+        case State::FadeOut:
+            break;
+        default:
+            break;
     }
 
-    bool moved = false;
-
-    if(bn::keypad::up_pressed()) {
-        if(_selected_idx > 0) {
-            --_selected_idx;
-            moved = true;
-        }
-    } else if(bn::keypad::down_pressed()) {
-        if(_selected_idx + 1 < _entries.size()) {
-            ++_selected_idx;
-            moved = true;
-        }
-    }
-
-    if(moved) {
-        _update_selection();
-    }
-
-    if(bn::keypad::a_pressed()) {
-        bn::sound_items::se_select.play();
-        return _entries[_selected_idx].choice;
-    }
-
-    return Choice::None;
+    return _choice == Choice::None;
 }
 
 void MainMenu::_build_text() {
@@ -124,7 +109,7 @@ void MainMenu::_build_text() {
             case Choice::EReader:
                 label = "E-READER";
                 break;
-            case Choice::Options:
+            case Choice::Option:
                 label = "OPTION";
                 break;
             default:
@@ -149,7 +134,7 @@ void MainMenu::_update_fade_out() {
     // TODO: Fade out
 }
 
-MainMenu::Choice MainMenu::_handle_input() {
+void MainMenu::_handle_input() {
     bool moved = false;
 
     if(_state == State::WaitInput) {
@@ -165,14 +150,20 @@ MainMenu::Choice MainMenu::_handle_input() {
             }
         }
 
-        if(bn::keypad::a_pressed()) {
-            return _entries[_selected_idx].choice;
+        if(moved) {
+            _update_selection();
         }
 
-        if(bn::keypad::l_held && bn::keypad::b_held && bn::keypad::up_held) {
+        if(bn::keypad::a_pressed()) {
+            _choice = _entries[_selected_idx].choice;
+        }
+
+        if(bn::keypad::l_held() && bn::keypad::b_held() && bn::keypad::up_held()) {
             _save_manager->erase_save();
         }
     }
+}
 
-    return Choice::None;
+MainMenu::Choice MainMenu::get_choice() {
+    return _choice;
 }

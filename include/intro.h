@@ -27,6 +27,7 @@ class Intro {
         };
 
         void _load_current_splash();
+        void _load_press_text_sprites(bool show_press_text);
         void _update_fade_in();
         void _update_hold();
         void _update_fade_out();
@@ -40,5 +41,5 @@ class Intro {
         bn::optional<bn::regular_bg_ptr> _bg;
         bn::vector<bn::sprite_ptr, 4> _press_text_sprites;
         int _blink_timer = 0;
-        bool _blink_visible = false;
+        bool _blink_visible = true;
 };

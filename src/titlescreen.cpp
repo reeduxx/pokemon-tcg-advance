@@ -109,7 +109,7 @@ namespace {
     }
 }
 
-Titlescreen::Titlescreen() :  _state(State::FadeInLogo), _timer(0), _blink_timer(0), _blink_visible(true) {
+TitleScreen::TitleScreen() :  _state(State::FadeInLogo), _timer(0), _blink_timer(0), _blink_visible(true) {
     bn::backdrop::set_color(bn::color(0, 0, 0));
     bn::blending::set_black_fade_color();
     bn::blending::set_fade_alpha(1);
@@ -129,7 +129,7 @@ Titlescreen::Titlescreen() :  _state(State::FadeInLogo), _timer(0), _blink_timer
     }
 }
 
-void Titlescreen::_load_bg() {
+void TitleScreen::_load_bg() {
     _bg = bn::regular_bg_items::pokemon_logo.create_bg(0, 31);
     _bg->set_priority(2);
     _bg->set_blending_enabled(true);
@@ -138,7 +138,7 @@ void Titlescreen::_load_bg() {
     _blink_visible = false;
 }
 
-bool Titlescreen::update() {
+bool TitleScreen::update() {
     _handle_input();
 
     switch(_state) {
@@ -166,7 +166,7 @@ bool Titlescreen::update() {
     return false;
 }
 
-void Titlescreen::_handle_input() {
+void TitleScreen::_handle_input() {
     if(_state == State::WaitInput) {
         if(bn::keypad::start_pressed() || bn::keypad::a_pressed()) {
             _state = State::FadeOut;
@@ -179,7 +179,7 @@ void Titlescreen::_handle_input() {
     }
 }
 
-void Titlescreen::_update_fade_in_logo() {
+void TitleScreen::_update_fade_in_logo() {
     bn::fixed t = clamp_lerp(_timer, fade_duration);
     bn::blending::set_fade_alpha(1 - t);
 
@@ -196,7 +196,7 @@ void Titlescreen::_update_fade_in_logo() {
     }
 }
 
-void Titlescreen::_update_fade_in_tcg() {
+void TitleScreen::_update_fade_in_tcg() {
     bn::fixed t = clamp_lerp(_timer, fade_duration);
     bn::blending::set_fade_alpha(1 - t);
 
@@ -212,7 +212,7 @@ void Titlescreen::_update_fade_in_tcg() {
     }
 }
 
-void Titlescreen::_update_logo_anim() {
+void TitleScreen::_update_logo_anim() {
     if(!_logo_move_action) {
         _logo_move_action = bn::regular_bg_move_to_action(*_bg, anim_duration, 0, 0);
         _tcg_left_action = bn::sprite_move_to_action(_tcg_sprites[0], anim_duration, -32, -8);
@@ -246,7 +246,7 @@ void Titlescreen::_update_logo_anim() {
     }
 }
 
-void Titlescreen::_update_wait_input() {
+void TitleScreen::_update_wait_input() {
     if(!_backdrop_color_hbe.has_value()) {
          _backdrop_color_hbe = create_rainbow_gradient_hbe(); 
     }
@@ -268,7 +268,7 @@ void Titlescreen::_update_wait_input() {
     }
 }
 
-void Titlescreen::_update_press_text_blink() {
+void TitleScreen::_update_press_text_blink() {
     if(++_blink_timer >= blink_interval) {
         _blink_timer = 0;
         _blink_visible = !_blink_visible;
@@ -279,7 +279,7 @@ void Titlescreen::_update_press_text_blink() {
     }
 }
 
-void Titlescreen::_update_fade_out() {
+void TitleScreen::_update_fade_out() {
     if(_timer == 0) {
         _bg->set_blending_enabled(true);
         
@@ -301,7 +301,7 @@ void Titlescreen::_update_fade_out() {
     }
 }
 
-void Titlescreen::_skip() {
+void TitleScreen::_skip() {
     bn::blending::set_fade_alpha(0);
     _bg->set_y(0);
     _bg->set_blending_enabled(false);
@@ -325,12 +325,12 @@ void Titlescreen::_skip() {
     }
 }
 
-inline bn::fixed Titlescreen::clamp_lerp(int time, int duration) {
+inline bn::fixed TitleScreen::clamp_lerp(int time, int duration) {
     bn::fixed t = bn::fixed(time) / duration;
     return bn::clamp(t, bn::fixed(0), bn::fixed(1));
 }
 
-void Titlescreen::_init_cards() {
+void TitleScreen::_init_cards() {
     _cards.clear();
 
     for(int i = 0; i < cards_count; ++i) {
@@ -377,7 +377,7 @@ void Titlescreen::_init_cards() {
     }
 }
 
-void Titlescreen::_update_cards() {
+void TitleScreen::_update_cards() {
     constexpr bn::fixed bottom_y = bn::fixed(88);
     constexpr bn::fixed top_y = bn::fixed(-88);
 

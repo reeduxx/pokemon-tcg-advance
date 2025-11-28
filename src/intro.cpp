@@ -1,4 +1,5 @@
 #include "intro.h"
+
 #include "bn_blending.h"
 #include "bn_keypad.h"
 #include "bn_regular_bg_items_butano_splash.h"
@@ -9,22 +10,16 @@
 #include "bn_sprite_items_health_and_safety_text_2.h"
 #include "bn_sprite_items_health_and_safety_text_3.h"
 
-Intro::Intro() : _current_idx(0), _state(State::FadeIn), _timer(0), _blink_timer(0), _blink_visible(true) {
+namespace {
+    constexpr int press_text_blink_period = 30;
+}
+
+Intro::Intro() {
     bn::blending::set_black_fade_color();
     bn::blending::set_fade_alpha(1);
     _splashes.push_back({ bn::regular_bg_items::health_and_safety_splash, 30, -1, 30, true });
     _splashes.push_back({ bn::regular_bg_items::judgmental_frog_studios_splash, 30, 60, 30, false });
     _splashes.push_back({ bn::regular_bg_items::butano_splash, 30, 60, 30, false });
-
-    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_0.create_sprite(-68, 64));
-    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_1.create_sprite(-4, 64));
-    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_2.create_sprite(60, 64));
-    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_3.create_sprite(96, 64));
-
-    for(bn::sprite_ptr& sprite : _press_text_sprites) {
-        sprite.set_visible(false);
-    }
-
     _load_current_splash();
 }
 
@@ -47,106 +42,79 @@ bool Intro::update() {
             break;
     }
 
-    return false;
+    return _state == State::Done;
 }
 
 void Intro::_load_current_splash() {
-    if(_bg) {
-        _bg.reset();
-    }
-
-    const Splash& s = _splashes[_current_idx];
-    _bg = s.bg.create_bg(0, 0);
+    const Splash& splash = _splashes[_current_idx];
+    _bg.reset();
+    _bg = splash.bg.create_bg(0, 0);
     _bg->set_blending_enabled(true);
     _timer = 0;
-    bn::blending::set_fade_alpha(1);
-    
-    if(!s.show_press_text && !_press_text_sprites.empty()) {
-        _press_text_sprites.clear();
-    }
-
+    _press_text_sprites.clear();
     _blink_timer = 0;
     _blink_visible = true;
+    _load_press_text_sprites(splash.show_press_text);
+    bn::blending::set_fade_alpha(1);
 }
 
-bool Intro::_skip_requested() const {
-    if(_state == State:: FadeIn || _state == State::Hold) {
-        if(bn::keypad::a_pressed()) {
-            _state = State::FadeOut;
-            _timer = 0;
-            return true;
-        } else if(bn::keypad::start_pressed()) {
-            _state = State::Done;
-            return true;
-        }
-    }
+void Intro::_load_press_text_sprites(bool show_press_text) {
+    constexpr int y_positions[4] = { -68, -4, 60, 96 };
+    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_0.create_sprite(y_positions[0], 64));
+    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_1.create_sprite(y_positions[1], 64));
+    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_2.create_sprite(y_positions[2], 64));
+    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_3.create_sprite(y_positions[3], 64));
 
-    return false;
+    for(bn::sprite_ptr& sprite : _press_text_sprites) {
+        sprite.set_visible(false);
+    }
 }
 
 void Intro::_update_fade_in() {
-    const Splash& s = _splashes[_current_idx];
-
-    if(s.fade_in_frames <= 0) {
+    const Splash& splash = _splashes[_current_idx];
+    
+    if(_timer >= splash.fade_in_frames) {
         bn::blending::set_fade_alpha(0);
         _state = State::Hold;
         _timer = 0;
+    } else {
+        bn::fixed t = bn::fixed(_timer) / splash.fade_in_frames;
+        bn::fixed a = bn::fixed(1) - t;
+        bn::blending::set_fade_alpha(a);
+        ++_timer;
+    }
+}
+
+void Intro::_update_hold() {
+    const Splash& splash = _splashes[_current_idx];
+
+    if(splash.show_press_text) {
+        _update_press_text_blink();
+    }
+
+    const bool skip = _skip_requested();
+
+    if(splash.hold_frames < 0) {
+        if(skip) {
+            _state = State::FadeOut;
+            _timer = 0;
+        }
+
         return;
     }
 
-    bn::fixed t = bn::fixed(_timer) / s.fade_in_frames;
-    t = bn::max(bn::fixed(0), bn::min(t, bn::fixed(1)));
-    bn::blending::set_fade_alpha(1 - t);
-
-    if(_timer >= s.fade_in_frames) {
-        bn::blending::set_fade_alpha(0);
-        _state = State::Hold;
+    if(skip || _timer >= splash.hold_frames) {
+        _state = State::FadeOut;
         _timer = 0;
     } else {
         ++_timer;
     }
 }
 
-void Intro::_update_hold() {
-    const Splash& s = _splashes[_current_idx];
-
-    if(s.show_press_text) {
-        _update_press_text_blink();
-    }
-
-    if(s.hold_frames >= 0 && _timer >= s.hold_frames) {
-        _state = State::FadeOut;
-        _timer = 0;
-    }
-
-    ++_timer;
-}
-
-void Intro::_update_press_text_blink() {
-    constexpr int blink_interval = 20;
-
-    if(++_blink_timer >= blink_interval) {
-        _blink_timer = 0;
-        _blink_visible = !_blink_visible;
-
-        for(bn::sprite_ptr& sprite : _press_text_sprites) {
-            sprite.set_visible(_blink_visible);
-        }
-    }
-}
-
 void Intro::_update_fade_out() {
-    const Splash& s = _splashes[_current_idx];
+    const Splash& splash = _splashes[_current_idx];
 
-    if(s.fade_out_frames <= 0) {
-        bn::blending::set_fade_alpha(1);
-    } else {
-        bn::fixed t = bn::fixed(_timer) / s.fade_out_frames;
-        t = bn::max(bn::fixed(0), bn::min(t, bn::fixed(1)));
-        bn::blending::set_fade_alpha(t);
-    }
-
-    if(_timer >= s.fade_out_frames) {
+    if(_timer >= splash.fade_out_frames) {
         bn::blending::set_fade_alpha(1);
 
         if(_current_idx + 1 < _splashes.size()) {
@@ -157,6 +125,26 @@ void Intro::_update_fade_out() {
             _state = State::Done;
         }
     } else {
+        bn::fixed t = bn::fixed(_timer) / splash.fade_out_frames;
+        bn::fixed a = t;
+        bn::blending::set_fade_alpha(a);
         ++_timer;
     }
+}
+
+void Intro::_update_press_text_blink() {
+    ++_blink_timer;
+
+    if(_blink_timer >= press_text_blink_period) {
+        _blink_timer = 0;
+        _blink_visible = !_blink_visible;
+
+        for(bn::sprite_ptr& sprite : _press_text_sprites) {
+            sprite.set_visible(_blink_visible);
+        }
+    }
+}
+
+bool Intro::_skip_requested() const {
+    return bn::keypad::a_pressed() || bn::keypad::b_pressed() || bn::keypad::start_pressed();
 }

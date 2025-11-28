@@ -20,8 +20,9 @@ class MainMenu {
             Option
         };
 
-        MainMenu();
-        Choice update();
+        explicit MainMenu();
+        bool update();
+        Choice get_choice();
     private:
         enum class State {
             FadeIn,
@@ -53,5 +54,6 @@ class MainMenu {
         void _build_text();
         void _update_fade_in();
         void _update_fade_out();
-        MainMenu::Choice _handle_input();
+        void _handle_input();
+        Choice _choice = Choice::None;
 };

@@ -9,9 +9,9 @@
 #include "bn_sprite_ptr.h"
 #include "bn_vector.h"
 
-class Titlescreen {
+class TitleScreen {
     public:
-        explicit Titlescreen();
+        explicit TitleScreen();
         bool update();
     private:
         enum class State {
