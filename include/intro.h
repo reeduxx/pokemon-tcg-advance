@@ -32,7 +32,6 @@ class Intro {
         void _update_hold();
         void _update_fade_out();
         void _update_press_text_blink();
-        [[nodiscard]] bool _skip_requested() const;
 
         bn::vector<Splash, 4> _splashes;
         int _current_idx = 0;

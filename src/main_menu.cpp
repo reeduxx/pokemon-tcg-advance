@@ -2,6 +2,7 @@
 #include "bn_backdrop.h"
 #include "bn_blending.h"
 #include "bn_keypad.h"
+#include "bn_log.h"
 #include "bn_sound_items.h"
 #include "bn_time.h"
 #include "bn_regular_bg_items_main_bg.h"
@@ -65,6 +66,7 @@ void MainMenu::_build_entries(bool has_save, bool ereader_enabled) {
 }
 
 void MainMenu::_update_selection() {
+    BN_LOG("Updating");
     if(!_selection_window || _entries.empty()) {
         return;
     }

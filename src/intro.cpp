@@ -24,8 +24,6 @@ Intro::Intro() {
 }
 
 bool Intro::update() {
-    _skip_requested();
-
     switch(_state) {
         case State::FadeIn:
             _update_fade_in();
@@ -47,7 +45,11 @@ bool Intro::update() {
 
 void Intro::_load_current_splash() {
     const Splash& splash = _splashes[_current_idx];
-    _bg.reset();
+    
+    if(_bg) {
+        _bg.reset();
+    }
+
     _bg = splash.bg.create_bg(0, 0);
     _bg->set_blending_enabled(true);
     _timer = 0;
@@ -73,6 +75,16 @@ void Intro::_load_press_text_sprites(bool show_press_text) {
 void Intro::_update_fade_in() {
     const Splash& splash = _splashes[_current_idx];
     
+    if(_current_idx != 0) {
+        if(bn::keypad::a_pressed()) {
+            _state = State::FadeOut;
+            _timer = 0;
+        } else if(bn::keypad::start_pressed()) {
+            _state = State::Done;
+            _timer = 0;
+        }
+    }
+
     if(_timer >= splash.fade_in_frames) {
         bn::blending::set_fade_alpha(0);
         _state = State::Hold;
@@ -92,18 +104,26 @@ void Intro::_update_hold() {
         _update_press_text_blink();
     }
 
-    const bool skip = _skip_requested();
-
-    if(splash.hold_frames < 0) {
-        if(skip) {
+    if(_current_idx == 0) {
+        if(bn::keypad::any_pressed()) {
             _state = State::FadeOut;
             _timer = 0;
         }
-
-        return;
+    } else {
+        if(bn::keypad::a_pressed()) {
+            _state = State::FadeOut;
+            _timer = 0;
+        } else if(bn::keypad::start_pressed()) {
+            _state = State::Done;
+            _timer = 0;
+        }
     }
 
-    if(skip || _timer >= splash.hold_frames) {
+    if(splash.hold_frames < 0) {
+        return;
+    }
+    
+    if(_timer >= splash.hold_frames) {
         _state = State::FadeOut;
         _timer = 0;
     } else {
@@ -143,8 +163,4 @@ void Intro::_update_press_text_blink() {
             sprite.set_visible(_blink_visible);
         }
     }
-}
-
-bool Intro::_skip_requested() const {
-    return bn::keypad::a_pressed() || bn::keypad::b_pressed() || bn::keypad::start_pressed();
 }

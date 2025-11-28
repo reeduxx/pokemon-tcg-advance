@@ -370,7 +370,7 @@ void TitleScreen::_init_cards() {
             sprite = bn::sprite_items::energy_sheet_3.create_sprite(x, y.round_integer());
         }
 
-        // bn::sprite_ptr sprite = bn::sprite_items::card_sheet_1.create_sprite(x, y.round_integer());
+        sprite.set_blending_enabled(true);
         sprite.set_bg_priority(3);
         sprite.set_z_order(1);
         _cards.push_back({ bn::move(sprite), y, speed, lane });
@@ -420,6 +420,7 @@ void TitleScreen::_update_cards() {
                 c.sprite = bn::sprite_items::energy_sheet_3.create_sprite(x, c.y.round_integer());
             }
             
+            c.sprite.set_blending_enabled(true);
             c.sprite.set_bg_priority(3);
             c.sprite.set_z_order(1);
             c.sprite.set_visible(true);
