@@ -2,7 +2,7 @@
 #include "bn_backdrop.h"
 #include "bn_blending.h"
 #include "bn_keypad.h"
-#include "bn_log.h"
+#include "bn_sound.h"
 #include "bn_sound_items.h"
 #include "bn_time.h"
 #include "bn_regular_bg_items_main_bg.h"
@@ -22,7 +22,8 @@ namespace {
     }
 }
 
-MainMenu::MainMenu() : _menu_builder(frame_styles[0].tiles, frame_styles[0].pal), _text_generator(font::font), _save_manager(SaveManager()), _state(State::FadeIn) {
+MainMenu::MainMenu() : _menu_builder(frame_styles[1].tiles, frame_styles[1].pal), _text_generator(font::font), _save_manager(SaveManager()) {
+    bn::blending::set_black_fade_color();
     _build_entries(_save_manager->save_exists(), false);
     _bg = bn::regular_bg_items::main_bg.create_bg(0, 0);
     _options_bg = _menu_builder.create_bg();
@@ -66,7 +67,6 @@ void MainMenu::_build_entries(bool has_save, bool ereader_enabled) {
 }
 
 void MainMenu::_update_selection() {
-    BN_LOG("Updating");
     if(!_selection_window || _entries.empty()) {
         return;
     }
@@ -82,17 +82,21 @@ void MainMenu::_update_selection() {
 bool MainMenu::update() {
     switch(_state) {
         case State::FadeIn:
+            _update_fade_in();
             break;
         case State::WaitInput:
             _handle_input();
             break;
         case State::FadeOut:
+            _update_fade_out();
             break;
+        case State::Done:
+            return true;
         default:
             break;
     }
 
-    return _choice == Choice::None;
+    return false;
 }
 
 void MainMenu::_build_text() {
@@ -129,11 +133,64 @@ void MainMenu::_build_text() {
 }
 
 void MainMenu::_update_fade_in() {
-    // TODO: Fade in
+    constexpr int fade_frames = 30;
+
+    if(_timer >= fade_frames) {
+        bn::blending::set_fade_alpha(0.7);
+
+        if(_bg) {
+            _bg->set_blending_enabled(false);
+        }
+
+        if(_options_bg) {
+            _options_bg->set_blending_enabled(true);
+        }
+
+        for(auto& sprite : _text_sprites) {
+            sprite.set_blending_enabled(true);
+        }
+
+        _state = State::WaitInput;
+        _timer = 0;
+        return;
+    }
+
+    bn::fixed t = bn::fixed(_timer) / fade_frames;
+    bn::fixed a = bn::fixed(1) - t;
+    bn::blending::set_fade_alpha(a);
+    ++_timer;
 }
 
 void MainMenu::_update_fade_out() {
-    // TODO: Fade out
+    constexpr int fade_frames = 30;
+
+    if(_select_sfx && _select_sfx->active()) {
+        return;
+    }
+
+    if(_timer == 0) {
+        if(_bg) {
+            _bg->set_blending_enabled(true);
+        }
+
+        if(_options_bg) {
+            _options_bg->set_blending_enabled(true);
+        }
+
+        for(auto& sprite : _text_sprites) {
+            sprite.set_blending_enabled(true);
+        }
+    }
+
+    if(_timer >= fade_frames) {
+        bn::blending::set_fade_alpha(1);
+        _state = State::Done;
+        return;
+    }
+
+    bn::fixed t = bn::fixed(_timer) / fade_frames;
+    bn::blending::set_fade_alpha(t);
+    ++_timer;
 }
 
 void MainMenu::_handle_input() {
@@ -146,7 +203,7 @@ void MainMenu::_handle_input() {
                 moved = true;
             }
         } else if(bn::keypad::down_pressed()) {
-            if(_selected_idx < _entries.size()) {
+            if(_selected_idx + 1 < _entries.size()) {
                 ++_selected_idx;
                 moved = true;
             }
@@ -157,7 +214,19 @@ void MainMenu::_handle_input() {
         }
 
         if(bn::keypad::a_pressed()) {
+            _select_sfx = bn::sound::play(bn::sound_items::se_select);
             _choice = _entries[_selected_idx].choice;
+            _selection_window->restore();
+            _state = State::FadeOut;
+            _timer = 0;
+        }
+
+        if(bn::keypad::b_pressed()) {
+            _select_sfx = bn::sound::play(bn::sound_items::se_select);
+            _choice = Choice::BackToTitle;
+            _selection_window->restore();
+            _state = State::FadeOut;
+            _timer = 0;
         }
 
         if(bn::keypad::l_held() && bn::keypad::b_held() && bn::keypad::up_held()) {

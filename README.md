@@ -64,16 +64,22 @@ make
 ## License & Credits
 **Developed by reeduxx.**
 
-This project uses [Butano](https://github.com/GValiente/butano), which is licensed under the [zLib license](https://github.com/GValiente/butano/blob/master/LICENSE).
+This project uses [**Butano**](https://github.com/GValiente/butano), which is licensed under the [**zLib license**](https://github.com/GValiente/butano/blob/master/LICENSE).
 
 ### Asset Credits
-- Health & Safety screen sourced from Mother 3, ripped by [Depressed Mario](https://www.spriters-resource.com/profile/depressed+mario/)
+- Health & Safety screen sourced from Mother 3, ripped by [**Depressed Mario**](https://www.spriters-resource.com/profile/depressed+mario/)
 
-- Pokémon logo and "Press Start" graphic sourced from _Pokémon Ruby & Sapphire_ (© Nintendo/Game Freak/Creatures/The Pokémon Company), ripped by [DogToon64](https://www.spriters-resource.com/profile/dogtoon64/)
+- Frog (🐸) and pointing hand (👉) emoji graphics from **Twemoji**, licensed under [**CC BY 4.0**](https://creativecommons.org/licenses/by/4.0) © 2020 Twitter, Inc and other contributors
+
+- Baloo 2 font by **Ek Type**. Licensed under the [**SIL Open Font License 1.1**](https://scripts.sil.org/OFL)
+
+- Pokémon logo and "Press Start" graphic sourced from _Pokémon Ruby & Sapphire_ (© Nintendo/Game Freak/Creatures/The Pokémon Company), ripped by [**DogToon64**](https://www.spriters-resource.com/profile/dogtoon64/)
 
 - Pokémon TCG logo recreation by reeduxx, based on the original Pokémon TCG logo (© The Pokémon Company)
 
-- Menu borders taken from [pokeemerald](https://github.com/pret/pokeemerald)
+- Menu frames sourced from _Pokémon FireRed & LeafGreen_ (© Nintendo/Game Freak/Creatures/The Pokémon Company), ripped by [**EternalLight**](https://www.spriters-resource.com/game_boy_advance/pokemonfireredleafgreen/asset/3858/)
+
+- Select sound effect sourced from , ripped by [iteachvader](https://sounds.spriters-resource.com/profile/iteachvader/)
 
 - In-game font derived from the _Pokémon Emerald_ font (© Nintendo/Game Freak/Creatures/The Pokémon Company); reformatted for Butano compatibility.
 

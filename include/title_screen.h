@@ -30,19 +30,7 @@ class TitleScreen {
             int lane;
         };
 
-        void _load_bg();
-        void _update_fade_in_logo();
-        void _update_fade_in_tcg();
-        void _update_logo_anim();
-        void _update_wait_input();
-        void _update_fade_out();
-        void _update_press_text_blink();
-        void _handle_input();
-        void _skip();
-        inline bn::fixed clamp_lerp(int time, int duration);
-
         bn::optional<bn::regular_bg_ptr> _bg;
-        bn::optional<bn::regular_bg_ptr> _test;
         State _state;
         int _timer;
         int _blink_timer;
@@ -59,6 +47,17 @@ class TitleScreen {
         int _gradient_phase = 0;
         int _gradient_timer = 0;
         bn::vector<Card, 8> _cards;
+
+        void _load_bg();
+        void _update_fade_in_logo();
+        void _update_fade_in_tcg();
+        void _update_logo_anim();
+        void _update_wait_input();
+        void _update_fade_out();
+        void _update_press_text_blink();
+        void _handle_input();
+        void _skip();
+        inline bn::fixed clamp_lerp(int time, int duration);
         void _init_cards();
         void _update_cards();
 };

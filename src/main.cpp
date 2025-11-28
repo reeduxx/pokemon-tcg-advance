@@ -1,14 +1,7 @@
-#include "bn_blending.h"
 #include "bn_core.h"
-#include "bn_log.h"
-#include "bn_regular_bg_ptr.h"
-#include "bn_sprite_ptr.h"
 #include "intro.h"
 #include "main_menu.h"
-#include "titlescreen.h"
-#include "bn_regular_bg_items_pokemon_logo.h"
-#include "bn_sprite_items_tcg_left.h"
-#include "bn_sprite_items_tcg_right.h"
+#include "title_screen.h"
 
 int main() {
     bn::core::init();
@@ -64,6 +57,11 @@ int main() {
                         case MainMenu::Choice::Option:
                             // TODO: Transition to option scene
                             state = State::Exit;
+                            break;
+                        case MainMenu::Choice::BackToTitle:
+                            main_menu.reset();
+                            title_screen.emplace();
+                            state = State::TitleScreen;
                             break;
                         case MainMenu::Choice::None:
                         default:

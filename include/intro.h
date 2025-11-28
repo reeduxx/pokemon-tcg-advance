@@ -26,13 +26,6 @@ class Intro {
             Done
         };
 
-        void _load_current_splash();
-        void _load_press_text_sprites(bool show_press_text);
-        void _update_fade_in();
-        void _update_hold();
-        void _update_fade_out();
-        void _update_press_text_blink();
-
         bn::vector<Splash, 4> _splashes;
         int _current_idx = 0;
         State _state = State::FadeIn;
@@ -41,4 +34,11 @@ class Intro {
         bn::vector<bn::sprite_ptr, 4> _press_text_sprites;
         int _blink_timer = 0;
         bool _blink_visible = true;
+
+        void _load_current_splash();
+        void _load_press_text_sprites();
+        void _update_fade_in();
+        void _update_hold();
+        void _update_fade_out();
+        void _update_press_text_blink();
 };

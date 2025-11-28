@@ -56,16 +56,20 @@ void Intro::_load_current_splash() {
     _press_text_sprites.clear();
     _blink_timer = 0;
     _blink_visible = true;
-    _load_press_text_sprites(splash.show_press_text);
+
+    if(splash.show_press_text) {
+        _load_press_text_sprites();
+    }
+
     bn::blending::set_fade_alpha(1);
 }
 
-void Intro::_load_press_text_sprites(bool show_press_text) {
-    constexpr int y_positions[4] = { -68, -4, 60, 96 };
-    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_0.create_sprite(y_positions[0], 64));
-    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_1.create_sprite(y_positions[1], 64));
-    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_2.create_sprite(y_positions[2], 64));
-    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_3.create_sprite(y_positions[3], 64));
+void Intro::_load_press_text_sprites() {
+    constexpr int x_positions[4] = { -68, -4, 60, 96 };
+    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_0.create_sprite(x_positions[0], 64));
+    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_1.create_sprite(x_positions[1], 64));
+    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_2.create_sprite(x_positions[2], 64));
+    _press_text_sprites.push_back(bn::sprite_items::health_and_safety_text_3.create_sprite(x_positions[3], 64));
 
     for(bn::sprite_ptr& sprite : _press_text_sprites) {
         sprite.set_visible(false);
@@ -79,9 +83,11 @@ void Intro::_update_fade_in() {
         if(bn::keypad::a_pressed()) {
             _state = State::FadeOut;
             _timer = 0;
+            return;
         } else if(bn::keypad::start_pressed()) {
             _state = State::Done;
             _timer = 0;
+            return;
         }
     }
 

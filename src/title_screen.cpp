@@ -1,4 +1,4 @@
-#include "titlescreen.h"
+#include "title_screen.h"
 #include "bn_backdrop.h"
 #include "bn_blending.h"
 #include "bn_color.h"
@@ -22,12 +22,14 @@ namespace {
     bn::array<bn::color, screen_height> backdrop_gradient_colors;
     constexpr bn::color white_color(31, 31, 31);
     constexpr bn::color rainbow_keys[] = {
-        bn::color(31, 16, 16), // red
-        bn::color(31, 31, 16), // yellow
-        bn::color(16, 31, 16), // green
-        bn::color(16, 31, 31), // cyan
-        bn::color(16, 16, 31), // blue
-        bn::color(26, 16, 31) // purple
+        bn::color(10, 25, 10),
+        bn::color(31, 10, 2),
+        bn::color(5, 15, 31),
+        bn::color(31, 31, 5),
+        bn::color(20, 5, 20),
+        bn::color(20, 10, 2),
+        bn::color(5, 5, 8),
+        bn::color(25, 25, 28)
     };
     constexpr int rainbow_key_count = sizeof(rainbow_keys) / sizeof(rainbow_keys[0]);
 
@@ -183,7 +185,7 @@ void TitleScreen::_update_fade_in_logo() {
     bn::fixed t = clamp_lerp(_timer, fade_duration);
     bn::blending::set_fade_alpha(1 - t);
 
-    if(++_timer >= 60) {
+    if(++_timer >= fade_duration) {
         _bg->set_blending_enabled(false);
         bn::blending::set_fade_alpha(1);
         _state = State::FadeInTCG;
@@ -200,7 +202,7 @@ void TitleScreen::_update_fade_in_tcg() {
     bn::fixed t = clamp_lerp(_timer, fade_duration);
     bn::blending::set_fade_alpha(1 - t);
 
-    if(++_timer >= 60) {
+    if(++_timer >= fade_duration) {
         bn::blending::set_fade_alpha(0);
 
         for(auto& sprite : _tcg_sprites) {
@@ -280,6 +282,8 @@ void TitleScreen::_update_press_text_blink() {
 }
 
 void TitleScreen::_update_fade_out() {
+    bn::blending::set_white_fade_color();
+    
     if(_timer == 0) {
         _bg->set_blending_enabled(true);
         
@@ -388,7 +392,6 @@ void TitleScreen::_update_cards() {
             int x = lane_random_x(c.lane);
             c.y = bottom_y + bn::fixed(random_generator.get_int(0, 40));
             c.speed = bn::fixed(0.3) + bn::fixed(random_generator.get_int(0, 5)) / 10;
-            c.sprite.set_position(x, c.y.round_integer());
             int sheet = random_generator.get_int(0, 5);
 
             if(sheet == 0) {

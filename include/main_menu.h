@@ -3,6 +3,7 @@
 #include "bn_optional.h"
 #include "bn_rect_window.h"
 #include "bn_regular_bg_ptr.h"
+#include "bn_sound_handle.h"
 #include "bn_sprite_ptr.h"
 #include "bn_sprite_text_generator.h"
 #include "bn_string.h"
@@ -14,6 +15,7 @@ class MainMenu {
     public:
         enum class Choice {
             None,
+            BackToTitle,
             Continue,
             NewGame,
             EReader,
@@ -46,7 +48,7 @@ class MainMenu {
         bn::sprite_text_generator _text_generator;
         bn::vector<bn::sprite_ptr, 32> _text_sprites;
         bn::optional<SaveManager> _save_manager;
-        State _state;
+        State _state = State::WaitInput;
         int _selected_idx = 0;
         void _build_entries(bool has_save, bool ereader_enabled);
         void _create_bg();
@@ -56,4 +58,6 @@ class MainMenu {
         void _update_fade_out();
         void _handle_input();
         Choice _choice = Choice::None;
+        int _timer;
+        bn::optional<bn::sound_handle> _select_sfx;
 };
