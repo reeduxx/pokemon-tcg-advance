@@ -1,6 +1,7 @@
 # Pokémon Trading Card Game: Advance
 ## About
 Pokémon TCG: Advance is an ambitious project to bring the classic TCG to the Game Boy Advance system using the [Butano](https://github.com/GValiente/butano) engine.
+## Screenshots
 ## TODO & Progress
 ### Card Database Progress
 - [ ] Base Set
@@ -59,16 +60,22 @@ make
 3. Play!
 
 ## License & Credits
-Developed by reeduxx.
+**Developed by reeduxx.**
 
-This project uses [Butano](https://github.com/GValiente/butano), which is licensed under the [zLib license](https://github.com/GValiente/butano/LICENSE).
+This project uses [Butano](https://github.com/GValiente/butano), which is licensed under the [zLib license](https://github.com/GValiente/butano/blob/master/LICENSE).
 
-Health & Safety graphic ripped by [Depressed Mario](https://www.spriters-resource.com/profile/depressed+mario/)
+### Asset Credits
+- Health & Safety screen sourced from Mother 3, ripped by [Depressed Mario](https://www.spriters-resource.com/profile/depressed+mario/)
 
-## Font Notice
-The in-game font is derived from the **Pokémon Emerald** font (© Nintendo / Game Freak). It has been reformatted to be compatible with the Butano engine.
+- Pokémon logo and "Press Start" graphic sourced from _Pokémon Ruby & Sapphire_ (© Nintendo/Game Freak/Creatures/The Pokémon Company), ripped by [DogToon64](https://www.spriters-resource.com/profile/dogtoon64/)
+
+- Pokémon TCG logo recreation by reeduxx, based on the original Pokémon TCG logo (© The Pokémon Company)
+
+- Menu borders taken from [pokeemerald](https://github.com/pret/pokeemerald)
+
+- In-game font derived from the _Pokémon Emerald_ font (© Nintendo/Game Freak/Creatures/The Pokémon Company); reformatted for Butano compatibility.
 
 ## Legal Disclaimer
-This is a fan project and is not affiliated with Nintendo, Game Freak, Creatures, or The Pokémon Company. All Pokémon trademarks and related content are owned by their respective holders.
+This is a non-commercial fan project and is not affiliated with nor endorsed by Nintendo, Game Freak, Creatures, or The Pokémon Company. All Pokémon names, images, and related trademarks are the property of their respective owners.
 
-**Please support the official TCG - and screw scalpers.**
+**Please support the official Pokémon Trading Card Game - and screw scalpers.**

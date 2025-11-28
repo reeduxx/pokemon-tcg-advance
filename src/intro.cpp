@@ -55,13 +55,13 @@ void Intro::_load_current_splash() {
         _bg.reset();
     }
 
-    const splash& s = _splashes[_current_idx];
+    const Splash& s = _splashes[_current_idx];
     _bg = s.bg.create_bg(0, 0);
     _bg->set_blending_enabled(true);
     _timer = 0;
     bn::blending::set_fade_alpha(1);
     
-    if(!s.show_press && !_press_text_sprites.empty()) {
+    if(!s.show_press_text && !_press_text_sprites.empty()) {
         _press_text_sprites.clear();
     }
 
@@ -69,34 +69,36 @@ void Intro::_load_current_splash() {
     _blink_visible = true;
 }
 
-void Intro::_skip_requested() {
+bool Intro::_skip_requested() const {
     if(_state == State:: FadeIn || _state == State::Hold) {
         if(bn::keypad::a_pressed()) {
             _state = State::FadeOut;
             _timer = 0;
-            return;
+            return true;
         } else if(bn::keypad::start_pressed()) {
             _state = State::Done;
-            return;
+            return true;
         }
     }
+
+    return false;
 }
 
 void Intro::_update_fade_in() {
-    const splash& s = _splashes[_current_idx];
+    const Splash& s = _splashes[_current_idx];
 
-    if(s.fade_in <= 0) {
+    if(s.fade_in_frames <= 0) {
         bn::blending::set_fade_alpha(0);
         _state = State::Hold;
         _timer = 0;
         return;
     }
 
-    bn::fixed t = bn::fixed(_timer) / s.fade_in;
+    bn::fixed t = bn::fixed(_timer) / s.fade_in_frames;
     t = bn::max(bn::fixed(0), bn::min(t, bn::fixed(1)));
     bn::blending::set_fade_alpha(1 - t);
 
-    if(_timer >= s.fade_in) {
+    if(_timer >= s.fade_in_frames) {
         bn::blending::set_fade_alpha(0);
         _state = State::Hold;
         _timer = 0;
@@ -106,13 +108,13 @@ void Intro::_update_fade_in() {
 }
 
 void Intro::_update_hold() {
-    const splash& s = _splashes[_current_idx];
+    const Splash& s = _splashes[_current_idx];
 
-    if(s.show_press) {
+    if(s.show_press_text) {
         _update_press_text_blink();
     }
 
-    if(s.hold >= 0 && _timer >= s.hold) {
+    if(s.hold_frames >= 0 && _timer >= s.hold_frames) {
         _state = State::FadeOut;
         _timer = 0;
     }
@@ -134,17 +136,17 @@ void Intro::_update_press_text_blink() {
 }
 
 void Intro::_update_fade_out() {
-    const splash& s = _splashes[_current_idx];
+    const Splash& s = _splashes[_current_idx];
 
-    if(s.fade_out <= 0) {
+    if(s.fade_out_frames <= 0) {
         bn::blending::set_fade_alpha(1);
     } else {
-        bn::fixed t = bn::fixed(_timer) / s.fade_out;
+        bn::fixed t = bn::fixed(_timer) / s.fade_out_frames;
         t = bn::max(bn::fixed(0), bn::min(t, bn::fixed(1)));
         bn::blending::set_fade_alpha(t);
     }
 
-    if(_timer >= s.fade_out) {
+    if(_timer >= s.fade_out_frames) {
         bn::blending::set_fade_alpha(1);
 
         if(_current_idx + 1 < _splashes.size()) {
