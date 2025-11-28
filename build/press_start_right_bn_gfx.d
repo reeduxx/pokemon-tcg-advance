@@ -1,1 +1,0 @@
-press_start_right_bn_gfx.o: press_start_right_bn_gfx.s

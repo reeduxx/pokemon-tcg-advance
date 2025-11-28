@@ -1,1 +1,0 @@
-health_and_safety_splash_bn_gfx.o: health_and_safety_splash_bn_gfx.s

@@ -1,2 +1,0 @@
-judgmental_frog_studios_splash_bn_gfx.o: \
- judgmental_frog_studios_splash_bn_gfx.s
