@@ -79,7 +79,7 @@ This project uses [**Butano**](https://github.com/GValiente/butano), which is li
 
 - Menu frames sourced from _Pokémon FireRed & LeafGreen_ (© Nintendo/Game Freak/Creatures/The Pokémon Company), ripped by [**EternalLight**](https://www.spriters-resource.com/game_boy_advance/pokemonfireredleafgreen/asset/3858/)
 
-- Select sound effect sourced from , ripped by [iteachvader](https://sounds.spriters-resource.com/profile/iteachvader/)
+- Select sound effect sourced from _Pokémon Emerald_ (© Nintendo/Game Freak/Creatures/The Pokémon Company), ripped by [iteachvader](https://sounds.spriters-resource.com/profile/iteachvader/)
 
 - In-game font derived from the _Pokémon Emerald_ font (© Nintendo/Game Freak/Creatures/The Pokémon Company); reformatted for Butano compatibility.
 
