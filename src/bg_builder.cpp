@@ -1,25 +1,26 @@
-#include "menu_builder.h"
+#include "bg_builder.h"
 #include "bn_memory.h"
 #include "bn_regular_bg_item.h"
 #include "bn_regular_bg_map_cell_info.h"
 
-MenuBuilder::MapData::MapData() : map_item(cells[0], bn::size(MenuBuilder::cols, MenuBuilder::rows)) {
+BgBuilder::MapData::MapData() : map_item(cells[0], bn::size(BgBuilder::cols, BgBuilder::rows)) {
     clear();
 }
 
-void MenuBuilder::MapData::clear() {
+void BgBuilder::MapData::clear() {
     bn::memory::clear(cells);
 }
 
-MenuBuilder::MenuBuilder(const bn::regular_bg_tiles_item& tiles, const bn::bg_palette_item& pal) : _tiles(&tiles), _pal(&pal) {
+BgBuilder::BgBuilder(const bn::regular_bg_tiles_item& tiles, const bn::bg_palette_item& pal) : _tiles(&tiles), _pal(&pal) {
     _map_data.clear();
 }
 
-void MenuBuilder::reset() {
+void BgBuilder::reset() {
     _map_data.clear();
+    _bg.reset();
 }
 
-void MenuBuilder::_set_cell(int x, int y, int tile_idx) {
+void BgBuilder::_set_cell(int x, int y, int tile_idx) {
     if(x < 0 || x >= cols || y < 0 || y >= rows) {
         return;
     }
@@ -30,7 +31,7 @@ void MenuBuilder::_set_cell(int x, int y, int tile_idx) {
     cell = info.cell();
 }
 
-void MenuBuilder::draw(int x, int y, int w, int h) {
+void BgBuilder::draw(int x, int y, int w, int h) {
     if(w < 2 || h < 2) {
         return;
     }
@@ -65,12 +66,16 @@ void MenuBuilder::draw(int x, int y, int w, int h) {
     }
 }
 
-bn::regular_bg_ptr MenuBuilder::create_bg() {
+bn::regular_bg_ptr BgBuilder::create_bg() {
     bn::regular_bg_item bg_item(*_tiles, *_pal, _map_data.map_item);
     _bg = bg_item.create_bg(0, 0);
     return *_bg;
 }
 
-bn::regular_bg_map_ptr MenuBuilder::bg_map() const {
+bn::regular_bg_map_ptr BgBuilder::bg_map() const {
     return _bg->map();
+}
+
+const bn::regular_bg_map_item& BgBuilder::map_item() const {
+    return _map_data.map_item;
 }

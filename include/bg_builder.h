@@ -8,15 +8,16 @@
 #include "bn_regular_bg_ptr.h"
 #include "bn_regular_bg_tiles_item.h"
 
-class MenuBuilder {
+class BgBuilder {
     public:
         static constexpr int cols = 32;
         static constexpr int rows = 32;
-        MenuBuilder(const bn::regular_bg_tiles_item& tiles, const bn::bg_palette_item& pal);
+        BgBuilder(const bn::regular_bg_tiles_item& tiles, const bn::bg_palette_item& pal);
         void reset();
         void draw(int x, int y, int w, int h);
         [[nodiscard]] bn::regular_bg_ptr create_bg();
         [[nodiscard]] bn::regular_bg_map_ptr bg_map() const;
+        const bn::regular_bg_map_item& map_item() const;
     private:
         struct MapData {
             alignas(int) bn::regular_bg_map_cell cells[cols * rows];

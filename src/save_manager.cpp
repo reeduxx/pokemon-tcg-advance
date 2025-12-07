@@ -1,8 +1,6 @@
 #include "save_manager.h"
 
-SaveManager::SaveManager() {
-
-}
+SaveManager::SaveManager() {}
 
 bool SaveManager::save_exists() const {
     SaveManager::SaveData temp;
