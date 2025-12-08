@@ -11,6 +11,7 @@
 #include "bn_vector.h"
 #include "bg_builder.h"
 #include "save_manager.h"
+#include "typewriter.h"
 
 class MainMenu {
     public:
@@ -57,10 +58,11 @@ class MainMenu {
         bn::optional<SaveManager> _save_manager;
         bn::optional<bn::sound_handle> _select_sfx;
         bn::optional<bn::time> _rtc_initial_time;
+        bn::optional<Typewriter> _typewriter;
         static constexpr int max_entries = 4;
         bn::vector<Entry, max_entries> _entries;
         bn::vector<bn::sprite_ptr, 32> _text_sprites;
-        bn::string<104> _rtc_message_text = "The internal battery has run dry.";
+        bn::string<104> _rtc_message_text = "The internal battery has run dry.\nThe game can be played.";
         int _timer;
         State _state = State::FadeIn;
         Choice _choice = Choice::None;

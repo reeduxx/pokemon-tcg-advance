@@ -305,16 +305,27 @@ void MainMenu::_build_rtc_message_box() {
     _options_bg = _bg_builder.create_bg();
     int text_x = tile_to_screen_x(menu_left_tile + 1);
     int text_y = tile_to_screen_y(top_tile + 2);
-    _text_generator.generate(text_x, text_y, _rtc_message_text, _text_sprites);
+    _typewriter.reset();
+    _typewriter.emplace(_text_generator, text_x, text_y, Typewriter::default_frames_per_char);
+    _typewriter->show(_rtc_message_text);
 }
 
 void MainMenu::_update_rtc_warning() {
-    if(bn::keypad::a_pressed()) {
-        for(auto& s : _text_sprites) {
-            s.set_visible(false);
+    if(!_typewriter) {
+        _state = State::WaitInput;
+        _start_main_menu();
+        return;
+    }
+
+    _typewriter->update();
+
+    if(_typewriter->finished_all()) {
+        _typewriter.reset();
+
+        if(_options_bg) {
+            _options_bg->set_visible(false);
         }
 
-        _text_sprites.clear();
         _state = State::WaitInput;
         _start_main_menu();
     }
