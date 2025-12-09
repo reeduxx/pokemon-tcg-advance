@@ -1,6 +1,8 @@
 #include "typewriter.h"
 
 #include "bn_keypad.h"
+#include "bn_log.h"
+#include "bn_utf8_character.h"
 
 Typewriter::Typewriter(bn::sprite_text_generator& text_generator, int x, int y, int frames_per_char) : _text_generator(text_generator), _x(x), _y(y), _frames_per_char(frames_per_char <= 0 ? 1 : frames_per_char) {}
 
@@ -48,7 +50,7 @@ void Typewriter::_rebuild_sprites() {
     }
 
     if(!_line_text[1].empty()) {
-        int second_line_y = _y + 14;
+        int second_line_y = _y + 16;
         _text_generator.generate(_x, second_line_y, _line_text[1], _sprites);
     }
 }
@@ -73,20 +75,56 @@ void Typewriter::_step_one_token() {
         return;
     }
 
-    if(c == '[' && (_script_index + 2) < _script.size() && _script[_script_index + 2] == ']') {
-        char code = _script[_script_index + 1];
+    if(c == '\f') {
+        ++_script_index;
+        _state = State::WaitingForPage;
+        return;
+    }
 
-        if(code == 'P') {
-            _script_index += 3;
+    if(c == '\v') {
+        ++_script_index;
+        _state = State::WaitingForWait;
+        return;
+    }
+
+    unsigned char uc = static_cast<unsigned char>(c);
+
+    if(uc & 0x80) {
+        bn::utf8_character utf_c(_script[_script_index]);
+        int char_size = utf_c.size();
+
+        if(_current_line < 2) {
+            for(int i = 0; i < char_size; ++i) {
+                if(_line_text[_current_line].full()) {
+                    _state = State::WaitingForPage;
+                    return;
+                }
+
+                _line_text[_current_line].push_back(_script[_script_index + i]);
+            }
+
+            _script_index += char_size;
+            _rebuild_sprites();
+        } else {
             _state = State::WaitingForPage;
-            return;
-        } else if(code == 'W') {
-            _script_index += 3;
-            _state = State::WaitingForWait;
-            return;
+        }
+    } else {
+        if(_current_line < 2) {
+            if(!_line_text[_current_line].full()) {
+                _line_text[_current_line].push_back(c);
+            } else {
+                _state = State::WaitingForPage;
+                return;
+            }
+
+            ++_script_index;
+            _rebuild_sprites();
+        } else {
+            _state = State::WaitingForPage;
         }
     }
 
+    /*
     if(_current_line < 2) {
         if(!_line_text[_current_line].full()) {
             _line_text[_current_line].push_back(c);
@@ -96,32 +134,14 @@ void Typewriter::_step_one_token() {
         }
 
         ++_script_index;
-        _rebuild_sprites();
+
+        if(!_suppress_rebuild) {
+            _rebuild_sprites();
+        }
     } else {
         _state = State::WaitingForPage;
     }
-}
-
-void Typewriter::_skip_current_page() {
-    if(_state != State::Typing && _state != State::WaitingForWait) {
-        return;
-    }
-
-    if(_state == State::WaitingForWait) {
-        _state = State::Typing;
-    }
-
-    while(_state == State::Typing && _script_index < _script.size()) {
-        _step_one_token();
-
-        if(_state == State::WaitingForPage || _state == State::WaitingForClose) {
-            break;
-        }
-
-        if(_state == State::WaitingForWait) {
-            _state = State::Typing;
-        }
-    }
+    */
 }
 
 void Typewriter::update() {
@@ -129,16 +149,11 @@ void Typewriter::update() {
         return;
     }
 
-    int effective_frames_per_char = _frames_per_char;
-
-    if(bn::keypad::b_held()) {
-        effective_frames_per_char = 1;
-    }
-
     if(_state == State::Typing) {
-        if(bn::keypad::a_pressed() || bn::keypad::b_pressed()) {
-            _skip_current_page();
-            return;
+        int effective_frames_per_char = _frames_per_char;
+
+        if(bn::keypad::a_pressed() || bn::keypad::b_held()) {
+            effective_frames_per_char = 1;
         }
 
         _counter++;

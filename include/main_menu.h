@@ -62,7 +62,7 @@ class MainMenu {
         static constexpr int max_entries = 4;
         bn::vector<Entry, max_entries> _entries;
         bn::vector<bn::sprite_ptr, 32> _text_sprites;
-        bn::string<104> _rtc_message_text = "The internal battery has run dry.\nThe game can be played.";
+        bn::string<256> _rtc_message_text = "The internal battery has run dry.\nThe game can be played.\fHowever, clock-based events will\nno longer occur.";
         int _timer;
         State _state = State::FadeIn;
         Choice _choice = Choice::None;

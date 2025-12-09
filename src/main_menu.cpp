@@ -24,23 +24,8 @@ namespace {
 
 MainMenu::MainMenu() : _bg_builder(frame_styles[1].tiles, frame_styles[1].pal), _text_generator(font::font), _save_manager(SaveManager()) {
     bn::blending::set_white_fade_color();
-    //_build_entries(_save_manager->save_exists(), false);
     _bg = bn::regular_bg_items::main_bg.create_bg(0, 0);
     _bg->set_blending_enabled(true);
-    //_options_bg = _bg_builder.create_bg();
-    //_build_text();
-    //_bg->set_blending_enabled(false);
-    //_options_bg->set_blending_enabled(true);
-    //bn::blending::set_fade_alpha(0.7);
-
-    //_selection_window = bn::rect_window::internal();
-    //_selection_window->set_show_blending(false);
-    //_selection_window->set_show_sprites(true);
-
-    //if(!_entries.empty()) {
-    //    _selected_idx = 0;
-    //    _update_selection();
-    //}
 }
 
 void MainMenu::_build_entries(bool has_save, bool ereader_enabled) {
@@ -304,7 +289,7 @@ void MainMenu::_build_rtc_message_box() {
     _options_bg.reset();
     _options_bg = _bg_builder.create_bg();
     int text_x = tile_to_screen_x(menu_left_tile + 1);
-    int text_y = tile_to_screen_y(top_tile + 2);
+    int text_y = tile_to_screen_y(top_tile + 1) + 9;
     _typewriter.reset();
     _typewriter.emplace(_text_generator, text_x, text_y, Typewriter::default_frames_per_char);
     _typewriter->show(_rtc_message_text);

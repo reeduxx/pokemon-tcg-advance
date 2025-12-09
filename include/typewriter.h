@@ -47,5 +47,4 @@ class Typewriter {
         void _clear_sprites();
         void _rebuild_sprites();
         void _step_one_token();
-        void _skip_current_page();
 };
