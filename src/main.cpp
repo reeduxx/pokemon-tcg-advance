@@ -1,6 +1,7 @@
 #include "bn_core.h"
 #include "intro.h"
 #include "main_menu.h"
+#include "option_menu.h"
 #include "title_screen.h"
 
 int main() {
@@ -10,6 +11,7 @@ int main() {
         Intro,
         TitleScreen,
         MainMenu,
+        OptionMenu,
         Exit
     };
 
@@ -17,6 +19,7 @@ int main() {
     bn::optional<Intro> intro;
     bn::optional<TitleScreen> title_screen;
     bn::optional<MainMenu> main_menu;
+    bn::optional<OptionMenu> option_menu;
     intro.emplace();
 
     while(state != State::Exit) {
@@ -55,8 +58,9 @@ int main() {
                             state = State::Exit;
                             break;
                         case MainMenu::Choice::Option:
-                            // TODO: Transition to option scene
-                            state = State::Exit;
+                            main_menu.reset();
+                            option_menu.emplace();
+                            state = State::OptionMenu;
                             break;
                         case MainMenu::Choice::BackToTitle:
                             main_menu.reset();
@@ -67,6 +71,14 @@ int main() {
                         default:
                             break;
                     }
+                }
+
+                break;
+            case State::OptionMenu:
+                if(option_menu && option_menu->update()) {
+                    option_menu.reset();
+                    main_menu.emplace();
+                    state = State::MainMenu;
                 }
 
                 break;

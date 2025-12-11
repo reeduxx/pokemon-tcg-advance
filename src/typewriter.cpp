@@ -1,8 +1,9 @@
 #include "typewriter.h"
 
 #include "bn_keypad.h"
-#include "bn_log.h"
+#include "bn_size.h"
 #include "bn_utf8_character.h"
+#include "bn_sprite_items_down_arrow.h"
 
 Typewriter::Typewriter(bn::sprite_text_generator& text_generator, int x, int y, int frames_per_char) : _text_generator(text_generator), _x(x), _y(y), _frames_per_char(frames_per_char <= 0 ? 1 : frames_per_char) {}
 
@@ -123,25 +124,6 @@ void Typewriter::_step_one_token() {
             _state = State::WaitingForPage;
         }
     }
-
-    /*
-    if(_current_line < 2) {
-        if(!_line_text[_current_line].full()) {
-            _line_text[_current_line].push_back(c);
-        } else {
-            _state = State::WaitingForPage;
-            return;
-        }
-
-        ++_script_index;
-
-        if(!_suppress_rebuild) {
-            _rebuild_sprites();
-        }
-    } else {
-        _state = State::WaitingForPage;
-    }
-    */
 }
 
 void Typewriter::update() {
@@ -150,6 +132,7 @@ void Typewriter::update() {
     }
 
     if(_state == State::Typing) {
+        _destroy_arrow();
         int effective_frames_per_char = _frames_per_char;
 
         if(bn::keypad::a_pressed() || bn::keypad::b_held()) {
@@ -163,12 +146,21 @@ void Typewriter::update() {
             _step_one_token();
         }
     } else if(_state == State::WaitingForPage) {
+        _create_arrow();
+
+        if(_arrow_action) {
+            _arrow_action->update();
+        }
+
         if(bn::keypad::a_pressed()) {
             _clear_lines();
             _clear_sprites();
+            _destroy_arrow();
             _state = State::Typing;
         }
     } else if(_state == State::WaitingForWait) {
+        _destroy_arrow();
+
         if(bn::keypad::a_pressed()) {
             _state = State::Typing;
         }
@@ -179,4 +171,24 @@ void Typewriter::update() {
             _state = State::Inactive;
         }
     }
+}
+
+void Typewriter::_create_arrow() {
+    if(_arrow) return;
+    
+    int arrow_x = 0;
+    int arrow_y = 0;
+
+    if(!_line_text[1].empty() && !_sprites.empty()) {
+        arrow_x = _x + _text_generator.width(_line_text[1]) + 3;
+        arrow_y = static_cast<int>(_sprites.back().y()) - 2;
+    }
+
+    _arrow = bn::sprite_items::down_arrow.create_sprite(arrow_x, arrow_y);
+    _arrow_action = bn::create_sprite_animate_action_forever(*_arrow, 9, bn::sprite_items::down_arrow.tiles_item(), 0, 1, 2, 1);
+}
+
+void Typewriter::_destroy_arrow() {
+    _arrow_action.reset();
+    _arrow.reset();
 }

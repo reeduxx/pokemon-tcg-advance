@@ -1,7 +1,9 @@
 #pragma once
 
+#include "bn_optional.h"
 #include "bn_string.h"
 #include "bn_string_view.h"
+#include "bn_sprite_animate_actions.h"
 #include "bn_sprite_ptr.h"
 #include "bn_sprite_text_generator.h"
 #include "bn_vector.h"
@@ -32,6 +34,8 @@ class Typewriter {
             WaitingForClose
         };
 
+        bn::optional<bn::sprite_ptr> _arrow;
+        bn::optional<bn::sprite_animate_action<4>> _arrow_action;
         bn::sprite_text_generator& _text_generator;
         bn::vector<bn::sprite_ptr, max_sprites> _sprites;
         bn::string<max_script_chars> _script;
@@ -47,4 +51,6 @@ class Typewriter {
         void _clear_sprites();
         void _rebuild_sprites();
         void _step_one_token();
+        void _create_arrow();
+        void _destroy_arrow();
 };

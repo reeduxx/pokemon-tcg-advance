@@ -2,7 +2,6 @@
 #include "bn_backdrop.h"
 #include "bn_blending.h"
 #include "bn_keypad.h"
-#include "bn_log.h"
 #include "bn_sound.h"
 #include "bn_sound_items.h"
 #include "bn_regular_bg_items_main_bg.h"
@@ -29,7 +28,6 @@ MainMenu::MainMenu() : _bg_builder(frame_styles[1].tiles, frame_styles[1].pal), 
 }
 
 void MainMenu::_build_entries(bool has_save, bool ereader_enabled) {
-    BN_LOG("Building entries");
     _entries.clear();
     int next_top = 6;
 

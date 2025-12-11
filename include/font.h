@@ -1,5 +1,4 @@
-#ifndef GUARD_FONT_H
-#define GUARD_FONT_H
+#pragma once
 
 #include "bn_sprite_font.h"
 #include "bn_utf8_characters_map.h"
@@ -230,5 +229,3 @@ namespace font {
     constexpr auto font_utf8_characters_map = bn::utf8_characters_map<font_normal_utf8_characters_span>();
     constexpr bn::sprite_font font(bn::sprite_items::font_normal, font_utf8_characters_map.reference(), font_character_widths);
 }
-
-#endif // GUARD_FONT_H
