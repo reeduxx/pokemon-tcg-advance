@@ -323,7 +323,7 @@ void MainMenu::_start_main_menu() {
     _bg->set_blending_enabled(false);
     _options_bg->set_blending_enabled(true);
     bn::blending::set_black_fade_color();
-    bn::blending::set_fade_alpha(0.7);
+    bn::blending::set_fade_alpha(0.5);
     _selection_window = bn::rect_window::internal();
     _selection_window->set_show_blending(false);
     _selection_window->set_show_sprites(true);

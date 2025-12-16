@@ -25,6 +25,9 @@ OptionMenu::OptionMenu() : _bg_builder(frame_styles[0].tiles, frame_styles[0].pa
     _load_options();
     _build_bg();
     _build_text();
+    _selection_window = bn::rect_window::internal();
+    _selection_window->set_show_blending(false);
+    _selection_window->set_show_sprites(true);
 }
 
 bool OptionMenu::update() {
@@ -82,9 +85,19 @@ void OptionMenu::_update_fade_in() {
     constexpr int fade_frames = 30;
 
     if(_timer >= fade_frames) {
-        bn::blending::set_fade_alpha(0);
+        bn::blending::set_fade_alpha(0.5);
+
+        if(_bg) {
+            _bg->set_blending_enabled(false);
+        }
+
+        if(_option_bg) {
+            _option_bg->set_blending_enabled(true);
+        }
+
         _state = State::WaitInput;
         _timer = 0;
+        _update_selection();
         return;
     }
 
@@ -95,7 +108,9 @@ void OptionMenu::_update_fade_in() {
 }
 
 void OptionMenu::_handle_input() {
-    if(bn::keypad::b_pressed()) {
+    bool moved = false;
+
+    if(bn::keypad::b_pressed() || (bn::keypad::a_pressed() && _options[_selected_option].name == "CANCEL")) {
         _state = State::FadeOut;
         return;
     }
@@ -107,6 +122,7 @@ void OptionMenu::_handle_input() {
             _selected_option = 0;
         } else {
             _update_option_text();
+            moved = true;
         }
     } else if(bn::keypad::down_pressed()) {
         _selected_option++;
@@ -115,7 +131,12 @@ void OptionMenu::_handle_input() {
             _selected_option = _options.size() - 1;
         } else {
             _update_option_text();
+            moved = true;
         }
+    }
+
+    if(moved) {
+        _update_selection();
     }
 
     OptionEntry& current_option = _options[_selected_option];
@@ -208,4 +229,16 @@ void OptionMenu::_update_option_text() {
 
         next_y += 2;
     }
+}
+
+void OptionMenu::_update_selection() {
+    if(!_selection_window) {
+        return;
+    }
+
+    const int top = tile_to_screen_y(11 + _selected_option * 2);
+    const int left = tile_to_screen_x(2);
+    const int bottom = top + 16;
+    const int right = left + 28 * 8;
+    _selection_window->set_boundaries(top, left, bottom, right);
 }
